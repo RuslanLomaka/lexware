@@ -937,12 +937,14 @@ Include "layout.inc.lsf"
 ' die vom Lexware-Layoutassistenten geladenen Werte ueberschreiben.
 Dim bSIGZielLayout as bool = TRUE
 Dim nSIGGruen as Numeric = 6992981
-Dim SchriftArtSIGKopf as FontType = CreateFont("Arial", 9, FONT_NORMAL, COLOR_BLACK)
-Dim SchriftArtSIGTitel as FontType = CreateFont("Arial", 11, FONT_BOLD, COLOR_BLACK)
-Dim SchriftArtSIGInfoFett as FontType = CreateFont("Arial", 9, FONT_BOLD, COLOR_BLACK)
-Dim SchriftArtSIGTabellenKopf as FontType = CreateFont("Arial", 9, FONT_BOLD, COLOR_WHITE)
-Dim SchriftArtSIGFooter as FontType = CreateFont("Arial", 8, FONT_NORMAL, COLOR_BLACK)
-Dim SchriftArtSIGFooterFett as FontType = CreateFont("Arial", 8, FONT_BOLD, COLOR_BLACK)
+Dim SchriftFontSIG as string = "Roboto"
+Dim SchriftArtSIGKopf as FontType = CreateFont(SchriftFontSIG, 8, FONT_NORMAL, COLOR_BLACK)
+Dim SchriftArtSIGTitel as FontType = CreateFont(SchriftFontSIG, 12, FONT_BOLD, COLOR_BLACK)
+Dim SchriftArtSIGInfo as FontType = CreateFont(SchriftFontSIG, 8, FONT_NORMAL, COLOR_BLACK)
+Dim SchriftArtSIGInfoFett as FontType = CreateFont(SchriftFontSIG, 8, FONT_BOLD, COLOR_BLACK)
+Dim SchriftArtSIGTabellenKopf as FontType = CreateFont(SchriftFontSIG, 10, FONT_BOLD, COLOR_WHITE)
+Dim SchriftArtSIGFooter as FontType = CreateFont(SchriftFontSIG, 8, FONT_NORMAL, COLOR_BLACK)
+Dim SchriftArtSIGFooterFett as FontType = CreateFont(SchriftFontSIG, 8, FONT_BOLD, COLOR_BLACK)
 
 if bSIGZielLayout then
 	' Positionierung wie im Ziel-PDF: breiter Nutzbereich, Adressfeld links,
@@ -1002,8 +1004,8 @@ if bSIGZielLayout then
 	sTextSpalte_7 = "Gesamtpreis"
 	sTextSpalte_8 = ""
 
-	SchriftFontStandard = "Arial"
-	SchriftGroesseStandard = 9
+	SchriftFontStandard = SchriftFontSIG
+	SchriftGroesseStandard = 10
 	SchriftTypStandard = FONT_NORMAL
 	SchriftFarbeStandard = COLOR_BLACK
 	SchriftArtStandard = CreateFont(SchriftFontStandard, SchriftGroesseStandard, SchriftTypStandard, SchriftFarbeStandard)
@@ -1475,7 +1477,7 @@ Function SIGInfoBlock()
 	SetPos(9.45 cm, 1.20 cm)
 	TL("Rechnung")
 
-	SelectFont(SchriftArtStandard)
+	SelectFont(SchriftArtSIGInfo)
 	SetTabs("L0")
 	SetPos(9.45 cm, 2.05 cm)
 	TL(sBelegNr)
@@ -1490,7 +1492,7 @@ Function SIGInfoBlock()
 	SelectFont(SchriftArtSIGInfoFett)
 	TL("Rechnung No" + Tab + sBelegNr)
 	TL("Datum" + Tab + sBelegDatum)
-	SelectFont(SchriftArtStandard)
+	SelectFont(SchriftArtSIGInfo)
 	TL("Kundennummer" + Tab + sKundenNr)
 	TL("Bestellnummer" + Tab + sBestellNr)
 	if sBestellNr <> "" then
