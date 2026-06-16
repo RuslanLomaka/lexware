@@ -1482,7 +1482,7 @@ Function SIGInfoBlock()
 
 	RemoveAllTabs()
 	SelectFont(SchriftArtSIGTitel)
-	SetPos(9.45 cm, 1.20 cm)
+	SetPos(9.45 cm, 1.60 cm)
 	TL("Rechnung")
 
 	SelectFont(SchriftArtSIGInfo)
@@ -1887,10 +1887,10 @@ Function SIGKopfZeile()
 	DrawImage(-nRandLinks, -nRandOben, nSeitenBreite, nSeitenHoehe, strSIGBackgroundBild)
 
 	SetPos(0, 72)
-	TL("Smart Industry Group GmbH | Von-Werthern-Str. 4A | 96487 Doerfles-Esbach | Deutschland")
+	TL("Smart Industry Group GmbH | Von-Werthern-Str. 4A | 96487 Dörfles-Esbach | Deutschland")
 
 	DrawImage(1225, -112, 430, 286, strSIGLogoBild)
-	DrawImage(0, 115, 1700, 12, strSIGGreenLineBild)
+	DrawImage(0, 119, 1700, 4, strSIGGreenLineBild)
 
 	SelectFont(SchriftArtStandard)
 End Function
@@ -2345,7 +2345,7 @@ Function SIGFussZeile()
 	SetPos(0, 77)
 	TL("Von-Werthern-Strasse 4A")
 	SetPos(0, 109)
-	TL("96487 Doerfles-Esbach")
+	TL("96487 Dörfles-Esbach")
 	SetPos(0, 141)
 	TL("Deutschland")
 
