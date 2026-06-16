@@ -1875,7 +1875,7 @@ Function SIGKopfZeile()
 	DrawLine(1700, GetPosY())
 
 	if sFirmenLogoQuelle <> "" then
-		DrawImage(1260, 0, 390, 112, sFirmenLogoQuelle)
+		DrawImage(1225, -62, 430, 286, sFirmenLogoQuelle)
 	end if
 
 	SelectFont(SchriftArtStandard)
