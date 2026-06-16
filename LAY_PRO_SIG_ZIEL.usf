@@ -937,7 +937,7 @@ Include "layout.inc.lsf"
 ' die vom Lexware-Layoutassistenten geladenen Werte ueberschreiben.
 Dim bSIGZielLayout as bool = TRUE
 Dim nSIGGruen as Numeric = 6992981
-Dim strSIGBildPfad as string = "C:/ProgramData/Lexware/professional/Formulare/faktura pro/IMAGES/"
+Dim strSIGBildPfad as string = "IMAGES/"
 Dim strSIGBackgroundBild as string = strSIGBildPfad + "BACKGROUND.png"
 Dim strSIGGreenLineBild as string = strSIGBildPfad + "GREEN_LINE.png"
 Dim strSIGLogoBild as string = strSIGBildPfad + "LOGO.png"
