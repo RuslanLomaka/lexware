@@ -964,12 +964,12 @@ if bSIGZielLayout then
 	nAbsenderLinks = nRandLinks
 	nAbsenderOben = nRandOben + 0.55 cm
 	nSichtfensterLinks = nRandLinks
-	nSichtfensterOben = nRandOben + 2.00 cm
+	nSichtfensterOben = nRandOben + 2.30 cm
 	nInfoFeldLinks = nRandLinks + 9.80 cm
 	nInfoFeldOben = nRandOben + 3.05 cm
 	nInfoFeldBreite = 6.70 cm
 	nBetrefftextLinks = nRandLinks
-	nBetrefftextOben = nRandOben + 7.80 cm
+	nBetrefftextOben = nRandOben + 7.35 cm
 	nFirmenLogoLinks = nRandLinks + 12.60 cm
 	nFirmenLogoOben = nRandOben + 0.05 cm
 	nFirmenLogoBreite = 3.70 cm
@@ -1482,7 +1482,7 @@ Function SIGInfoBlock()
 
 	RemoveAllTabs()
 	SelectFont(SchriftArtSIGTitel)
-	SetPos(9.45 cm, 1.60 cm)
+	SetPos(8.55 cm, 1.60 cm)
 	TL("Rechnung")
 
 
@@ -1885,7 +1885,7 @@ Function SIGKopfZeile()
 	TL("Smart Industry Group GmbH | Von-Werthern-Str. 4A | 96487 Dörfles-Esbach | Deutschland")
 
 	DrawImage(1225, -112, 430, 286, strSIGLogoBild)
-	DrawImage(0, 119, 1700, 4, strSIGGreenLineBild)
+	DrawImage(0, 119, 1880, 4, strSIGGreenLineBild)
 
 	SelectFont(SchriftArtStandard)
 End Function
