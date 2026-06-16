@@ -1811,16 +1811,6 @@ Function SIGSichtfensterNameFett()
 	end if
 End Function
 
-Function SIGUnterschrift()
-	LF
-	SelectFont(SchriftArtStandard)
-	TL("Mykhailo Syrotenko")
-	TL("Geschaeftsfuehrer")
-	SelectFont(SchriftArtGesamtbetrag)
-	TL("Smart Industry Group GmbH")
-	SelectFont(SchriftArtStandard)
-End Function
-
 '////////////////////////////////////////////////////////////////////////////////////
 'Funktion - PrintZusatzText
 'ZusatzText formatieren und ausgeben
@@ -2352,34 +2342,34 @@ Function SIGFussZeile()
 	TL("Smart Industry Group GmbH")
 
 	SelectFont(SchriftArtSIGFooter)
-	SetPos(0, 73)
+	SetPos(0, 77)
 	TL("Von-Werthern-Strasse 4A")
-	SetPos(0, 101)
+	SetPos(0, 109)
 	TL("96487 Doerfles-Esbach")
-	SetPos(0, 129)
+	SetPos(0, 141)
 	TL("Deutschland")
 
 	SetPos(620, 45)
 	TL("GF: Herr Mykhailo Syrotenko")
-	SetPos(620, 73)
+	SetPos(620, 77)
 	TL("Handelsregister Coburg HRB 7208")
-	SetPos(620, 101)
+	SetPos(620, 109)
 	TL("E-Mail: office@sig-automation.com")
-	SetPos(620, 129)
+	SetPos(620, 141)
 	TL("Internet: www.sig-automation.com")
 
 	SetPos(1190, 45)
 	TL("Steuer-Nr.: 212/137/50523")
-	SetPos(1190, 73)
+	SetPos(1190, 77)
 	TL("USt-IdNr.: DE365709124")
-	SetPos(1190, 101)
+	SetPos(1190, 109)
 	TL("Sparkasse Coburg-Lichtenfels")
-	SetPos(1190, 129)
+	SetPos(1190, 141)
 	TL("IBAN: DE29 7835 0000 0041 1889 47")
-	SetPos(1190, 157)
+	SetPos(1190, 173)
 	TL("BIC: BYLADEM1COB")
 
-	SetPos(1470, 230)
+	SetPos(1640, 230)
 	SelectFont(SchriftArtSIGFooterGrau)
 	TL("Seite " + FormatNumeric("%.0f", nAuftragPage) + " von 1")
 
@@ -3093,9 +3083,6 @@ end if
 		SetFont("Courier New", 8, FONT_NORMAL, COLOR_BLACK)
 	end if
 
-	if bSIGZielLayout then
-		SIGUnterschrift()
-	end if
 '///////////////////////////////////////////////////////////////////////////////////
 '---------------------LOGO ausgeben----------------------
 	if bMitLogoschluss then
