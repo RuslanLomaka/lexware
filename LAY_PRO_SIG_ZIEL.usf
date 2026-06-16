@@ -3,15 +3,15 @@ Include "fkeasy.lsf"		'Vereinfachungen der Schreibweise
 Include "var_pro.lsf"		'Variablenliste Faktura
 Include "belege.inc.lsf"
 
-' In diesem Abschnitt sind alle EinstellungsmÃ¶glichkeiten dieses Formulars
+' In diesem Abschnitt sind alle Einstellungsmöglichkeiten dieses Formulars
 ' aufgelistet.
 
-' Schalter fÃ¼r Erzeugung verschiedener Formularvarianten 
+' Schalter für Erzeugung verschiedener Formularvarianten 
 ' durch Setzten der verschiedenen Schalter und "Speichern unter..." werden die Unterarten der Formulare erzeugt
 ' Bei den Tabellen wird zwischen zwei Typen unterschieden :
-' 1. 	Tabellen fÃ¼r Lieferscheine 	
-' 2. 	Tabellen fÃ¼r die restlichen AuftrÃ¤ge, wie Angebote, AuftragsbestÃ¤tigungen, Rechnungen, Gutschriften, Bestellungen, Sammelrechnungen
-'		Dabei erfolgt noch noch eine Unterscheidung ob fÃ¼r Brutto-oder NettoauftrÃ¤ge
+' 1. 	Tabellen für Lieferscheine 	
+' 2. 	Tabellen für die restlichen Aufträge, wie Angebote, Auftragsbestätigungen, Rechnungen, Gutschriften, Bestellungen, Sammelrechnungen
+'		Dabei erfolgt noch noch eine Unterscheidung ob für Brutto-oder Nettoaufträge
 
  
 '////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -20,10 +20,10 @@ Include "belege.inc.lsf"
 'Seitenorientierung Hoch = PAGE_PORTRAIT, Quer = PAGE_LANDSCAPE
 Description page_orientation as PAGE_PORTRAIT
 Description form_description as "SIG Rechnung Ziel-Layout"
-Description form_code as "Auftrag layout"				' Neues Define, damit Auswahl als Brutto und Nettoformular in Faktura mÃ¶glich ist
+Description form_code as "Auftrag layout"				' Neues Define, damit Auswahl als Brutto und Nettoformular in Faktura möglich ist
 Description Form_Version As "24.05.00.0523"
 '////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-'-------------------------------------------Formularkonstanten (Textersatz fÃ¼r Werte)------------------------------------
+'-------------------------------------------Formularkonstanten (Textersatz für Werte)------------------------------------
 Dim b13Umsatzsteuer as bool = FALSE
 dim b13UmsatzsteuerTR as bool = FALSE
 Dim b13UmsatzsteuerAbschlag as bool = FALSE
@@ -34,12 +34,12 @@ Dim strText13bUstGAbschlagSo as string = ""
 Dim sGrundstfrei as string = ""
 Dim bDruckeSteuerImmer as bool = TRUE
 
-' Konstanten fÃ¼r Tabellentypen
+' Konstanten für Tabellentypen
 Const KEINE_TABELLE 				AS 0
 Const TABELLE_AUFTRAG 			AS 1
 Const TABELLE_LIEFERSCHEIN 	AS 2
 
-' Konstanten fÃ¼r Tabellen
+' Konstanten für Tabellen
 Const TABELLE_1		 			AS 0
 Const TABELLE_2				 	AS 1
 Const TABELLE_3				 	AS 2
@@ -62,23 +62,23 @@ Const LINKS							AS 0
 Const RECHTS 						AS 1
 Const MITTE 						AS 2
 
-' Layout des Formulars mit Programmwerte Ã¼berschreiben JA/NEIN
+' Layout des Formulars mit Programmwerte überschreiben JA/NEIN
 Const LAYOUT_DURCH_PROGRAMM			as JA
 
 '////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 '-------------------------------------------Formularvariablen mit Initialisierung---------------------------------------
 
 '/////////////////////////////////////////////////////////////////////////////////////////
-' Variablen fÃ¼r die Formulargestaltung, werden Ã¼ber das Programm Faktura gesetzt. Das Ãœberschreiben dieser Defaultwerte
+' Variablen für die Formulargestaltung, werden über das Programm Faktura gesetzt. Das Überschreiben dieser Defaultwerte
 ' erfolgt durch include von pcfkini.lsf ( siehe oben Define LAYOUT_VON_PROGRAMM )
 
 'Allgemeine Einstellungen einer DIN A4 Seite
 Dim nSeitenHoehe 	 	as numeric = 29.70 cm
 Dim nSeitenBreite 	as numeric = 21.00 cm
-'Dimensionierung der RÃ¤nder
+'Dimensionierung der Ränder
 DIM nRandLinks 		as numeric = 1.80 cm
 if is(DV_FREIMACHUNG) And (nRandLinks < nPostelleRandLinks) then
-	'Poststelle: Mindest-GrÃ¶ÃŸe fÃ¼r linken Rand
+	'Poststelle: Mindest-Größe für linken Rand
 	nRandLinks = nPostelleRandLinks
 end if
 DIM nRandOben 			as numeric = 1.50 cm
@@ -89,9 +89,9 @@ DIM nRandUnten 		as numeric = 1.20 cm
 Dim bIstLieferschein as bool = NEIN
 ' Ist Formular ein Bruttoformular ? JA/NEIN
 Dim bIstAuftragBrutto as bool = NEIN
-' AusfÃ¼hrung der Tabelle im Formular (Auftrag)
+' Ausführung der Tabelle im Formular (Auftrag)
 Dim nTabelle as Numeric = TABELLE_1
-' AusfÃ¼hrung der Tabelle im Formular (Lieferschein)
+' Ausführung der Tabelle im Formular (Lieferschein)
 Dim nLieferTabelle as Numeric = TABELLE_1
 
 ' Mit Nachkommastellen bei Menge
@@ -121,10 +121,10 @@ Dim bTabelleObenAufSeite1Auto	as bool	= JA
 Dim bTabelleObenAufSeite1AutoAbstand	as numeric	= 0 cm
 'Tabelle mit Kopfzeile darstellen JA/NEIN
 dim bTabelleMitKopf as bool = JA
-'Spalte USt.steuer statt Rabattspalte, wird in AbhÃ¤ngigkeit vom Tabellentyp gesetzt
+'Spalte USt.steuer statt Rabattspalte, wird in Abhängigkeit vom Tabellentyp gesetzt
 dim bSteuerStattRabatt as bool = NEIN
 
-' Spaltenbreiten (max. 7 Spalten mÃ¶glich) fÃ¼r Auftrag
+' Spaltenbreiten (max. 7 Spalten möglich) für Auftrag
 Dim nBreiteSpalte_1 as Numeric = 0.8 cm
 Dim nBreiteSpalte_2 as Numeric = 3.0 cm
 Dim nBreiteSpalte_3 as Numeric = 2.0 cm
@@ -135,7 +135,7 @@ Dim nBreiteSpalte_6 as Numeric = 2.0 cm
 Dim nBreiteSpalte_6a as Numeric = 2.0 cm 'USt.
 Dim nBreiteSpalte_7 as Numeric = 2.0 cm
 'Dim nBreiteSpalte_8 as Numeric = 2.0 cm
-' Bezeichnung der Spalten fÃ¼r Auftrag
+' Bezeichnung der Spalten für Auftrag
 Dim sTextSpalte_1 as String = "Pos"
 Dim sTextSpalte_2 as String = "Menge"
 Dim sTextSpalte_3 as String = "Art.-Nr."
@@ -145,13 +145,13 @@ Dim sTextSpalte_5 as String = "Einzelpreis\n"
 Dim sTextSpalte_6 as String = "Rabatt\n"
 Dim sTextSpalte_6a as String = "USt.\n"		'USt.
 Dim sTextSpalte_7 as String = "Gesamtpreis\n"
-' in Betragsspalten WÃ¤hrung anzeigen
+' in Betragsspalten Währung anzeigen
 Dim bMitWaehrung as bool = NEIN
 ' Breite der Tabelle
 Dim nBreiteTabelle as Numeric = nBreiteSpalte_1 + nBreiteSpalte_2 + nBreiteSpalte_3 + nBreiteSpalte_4 
 	nBreiteTabelle = nBreiteTabelle + nBreiteSpalte_5 + nBreiteSpalte_6 + nBreiteSpalte_6a + nBreiteSpalte_7 + nBreiteSpalte_8
 
-' Spaltenbreiten (max. 7 Spalten mÃ¶glich) fÃ¼r Lieferschein
+' Spaltenbreiten (max. 7 Spalten möglich) für Lieferschein
 Dim nLieferBreiteSpalte_1 as Numeric = 0.80 cm
 Dim nLieferBreiteSpalte_2 as Numeric = 3.00 cm
 Dim nLieferBreiteSpalte_3 as Numeric = 2.00 cm
@@ -161,7 +161,7 @@ Dim nLieferBreiteSpalte_6 as Numeric = 2.00 cm
 Dim nLieferBreiteSpalte_7 as Numeric = 2.00 cm
 Dim nLieferBreiteSpalte_8 as Numeric = 2.00 cm ' Ust
 'Dim nLieferBreiteSpalte_8 as Numeric = 2.00 cm
-' Bezeichnung der Spalten fÃ¼r Lieferschein
+' Bezeichnung der Spalten für Lieferschein
 Dim sLieferTextSpalte_1 as String = "Pos"
 Dim sLieferTextSpalte_2 as String = "Menge"
 Dim sLieferTextSpalte_3 as String = "Art.-Nr."
@@ -180,14 +180,14 @@ Dim SchriftFarbeSpaltenKopf as numeric 	= COLOR_BLACK
 Dim SchriftArtSpaltenKopf as FontType		= CreateFont(SchriftFontSpaltenKopf, SchriftGroesseSpaltenKopf, SchriftTypSpaltenKopf, SchriftFarbeSpaltenKopf)
 'Dim SchriftArtSpaltenKopf as FontType = CreateFont("Arial", 9, FONT_BOLD, GetNumeric("X", 19))
 
-'Schriftparameter fÃ¼r Standardschriftart
+'Schriftparameter für Standardschriftart
 Dim SchriftFontStandard as String 		= "Arial"
 Dim SchriftGroesseStandard as numeric 	= 9
 Dim SchriftTypStandard as numeric 		= FONT_NORMAL
 Dim SchriftFarbeStandard as numeric 	= COLOR_BLACK
 'Standardschriftart
 Dim SchriftArtStandard as FontType 		= CreateFont(SchriftFontStandard, SchriftGroesseStandard, SchriftTypStandard, SchriftFarbeStandard)
-' Schriftart fÃ¼r die Darstellung des Gesamtbetrags
+' Schriftart für die Darstellung des Gesamtbetrags
 dim SchriftArtGesamtbetrag as FontType	= CreateFont(SchriftFontStandard, SchriftGroesseStandard, FONT_BOLD, SchriftFarbeStandard)
 
 
@@ -197,36 +197,36 @@ Dim bMitKopfzeileAufSeite1 as bool 			= JA
 Dim bMitKopfzeileAbSeite2 as bool 			= JA
 'Kopfzeile Ausrichtung Text
 Dim nKopfzeileTextOrientation as Numeric 	= LINKS
-'Schriftparameter fÃ¼r Kopfzeilenbereich
+'Schriftparameter für Kopfzeilenbereich
 Dim SchriftFontKopfzeile as String 			= "Arial"
 Dim SchriftGroesseKopfzeile as numeric 	= 9
 Dim SchriftTypKopfzeile as numeric 			= FONT_NORMAL
 Dim SchriftFarbeKopfzeile as numeric		= COLOR_BLACK
-'Schriftart fÃ¼r Kopfzeilenbereich
+'Schriftart für Kopfzeilenbereich
 Dim SchriftArtKopfzeile as FontType 		= CreateFont(SchriftFontKopfzeile, SchriftGroesseKopfzeile, SchriftTypKopfzeile, SchriftFarbeKopfzeile)
-'Schriftart gilt nur fÃ¼r die 1.Zeile JA/NEIN
+'Schriftart gilt nur für die 1.Zeile JA/NEIN
 'bei JA werden alle nachfolgenden Zeile der Kopfzeile in der Standardschriftart dargestellt
-'bei NEIN werden alle Zeilen der Kopfzeile in der gewÃ¤hlten Schriftart dargestellt
+'bei NEIN werden alle Zeilen der Kopfzeile in der gewählten Schriftart dargestellt
 Dim bSchriftArtNurZeile1 as bool 			= NEIN
 
-'FuÃŸzeile auf Seite 1 anzeigen JA/NEIN
+'Fußzeile auf Seite 1 anzeigen JA/NEIN
 Dim bMitFusszeileAufSeite1 as bool 			= JA
-'FuÃŸzeile ab Seite2 anzeigen JA/NEIN
+'Fußzeile ab Seite2 anzeigen JA/NEIN
 Dim bMitFusszeileAbSeite2 	as bool 			= JA
-'FuÃŸzeile Hoehe
+'Fußzeile Hoehe
 Dim nFusszeileHoehe 			as Numeric 		= 2.5 cm
-'Schriftparameter fÃ¼r Fusszeilenbereich
+'Schriftparameter für Fusszeilenbereich
 Dim SchriftFontFusszeile	as String 		= "Arial"
 Dim SchriftGroesseFusszeile 	as numeric 	= 9
 Dim SchriftTypFusszeile 	as numeric 		= FONT_NORMAL
 Dim SchriftFarbeFusszeile 	as numeric 		= COLOR_BLACK
-'Schriftart fÃ¼r Fusszeilenbereich
+'Schriftart für Fusszeilenbereich
 Dim SchriftArtFusszeile as FontType = CreateFont(SchriftFontFusszeile, SchriftGroesseFusszeile, SchriftTypFusszeile, SchriftFarbeFusszeile)
-'zusÃ¤tzlicher Text fÃ¼r Fusszeile
+'zusätzlicher Text für Fusszeile
 Dim sFusszeileText1 		as String 			= ""
-'zusÃ¤tzlicher Text fÃ¼r Fusszeile
+'zusätzlicher Text für Fusszeile
 Dim sFusszeileText2 		as String 			= ""
-'zusÃ¤tzlicher Text fÃ¼r Fusszeile
+'zusätzlicher Text für Fusszeile
 Dim sFusszeileText3 		as String 			= ""
 
 'Absender auf Seite 1 anzeigen Ja/Nein
@@ -237,12 +237,12 @@ Dim bMitAbsenderAbSeite2 as bool = JA
 Dim nAbsenderLinks as Numeric = nRandLinks
 'Position Absender oben
 Dim nAbsenderOben as Numeric = nRandOben + 3 cm
-'Schriftparameter fÃ¼r Absender
+'Schriftparameter für Absender
 Dim SchriftFontAbsender as String 		= "Arial"
 Dim SchriftGroesseAbsender as numeric  = 9
 Dim SchriftTypAbsender as numeric 		= FONT_NORMAL
 Dim SchriftFarbeAbsender as numeric 	= COLOR_BLACK
-'Schriftart fÃ¼r Absender
+'Schriftart für Absender
 Dim SchriftArtAbsender as FontType = CreateFont(SchriftFontAbsender, SchriftGroesseAbsender, SchriftTypAbsender, SchriftFarbeAbsender)
 
 'Sichtfenster auf Seite 1 anzeigen Ja/Nein
@@ -255,13 +255,13 @@ Dim nSichtfensterLinks as Numeric = nRandLinks
 Dim nSichtfensterOben as Numeric = nRandOben + 4 cm
 'Ansprechpartner im  Sichtfeld anzeigen
 Dim bSichtfensterMitAnsprechpartner as bool = JA   'ersetzen durch "NEIN" falls Ansprechpartner 
-																	'in AdreÃŸfeld nicht gedruckt werden soll 
-'Schriftparameter fÃ¼r Sichtfenster
+																	'in Adreßfeld nicht gedruckt werden soll 
+'Schriftparameter für Sichtfenster
 Dim SchriftFontSichtfenster as String 		= "Arial"
 Dim SchriftGroesseSichtfenster as numeric  = 9
 Dim SchriftTypSichtfenster as numeric 		= FONT_NORMAL
 Dim SchriftFarbeSichtfenster as numeric 	= COLOR_BLACK
-'Schriftart fÃ¼r Sichtfenster
+'Schriftart für Sichtfenster
 Dim SchriftArtSichtfenster as FontType = CreateFont(SchriftFontSichtfenster, SchriftGroesseSichtfenster, SchriftTypSichtfenster, SchriftFarbeSichtfenster)
 
 ' Betrefftext auf Seite 1 anzeigen JA/NEIN
@@ -272,14 +272,14 @@ Dim bMitBetrefftextAbSeite2 as bool = JA
 Dim nBetrefftextLinks as Numeric = nRandLinks
 'Position Betrefftext oben
 Dim nBetrefftextOben as Numeric = nRandOben + 8 cm
-'Schriftparameter fÃ¼r 1. Betrefftext
+'Schriftparameter für 1. Betrefftext
 Dim SchriftFontBetrefftext1 as String 		= "Arial"
 Dim SchriftGroesseBetrefftext1 as numeric = 14
 Dim SchriftTypBetrefftext1 as numeric 		= FONT_NORMAL
 Dim SchriftFarbeBetrefftext1 as numeric 	= COLOR_BLACK
-'1. Schriftart fÃ¼r Betrefftext
+'1. Schriftart für Betrefftext
 Dim SchriftArtBetrefftext1 as FontType = CreateFont(SchriftFontBetrefftext1, SchriftGroesseBetrefftext1, SchriftTypBetrefftext1, SchriftFarbeBetrefftext1)
-'2. Schriftart fÃ¼r Betrefftext
+'2. Schriftart für Betrefftext
 Dim SchriftArtBetrefftext2 as FontType = ARIAL_9
 
 'Infofeld auf Seite 1 anzeigen Ja/Nein
@@ -292,21 +292,21 @@ Dim nInfoFeldLinks As Numeric = nRandLinks + 12 cm
 Dim nInfoFeldOben As Numeric = nRandOben + 6 cm
 'Breite Infofeld
 Dim nInfoFeldBreite as Numeric = 5 cm
-'Schriftparameter fÃ¼r Infoblock
+'Schriftparameter für Infoblock
 Dim SchriftFontInfofeld as String 		= "Arial"
 Dim SchriftGroesseInfofeld as numeric  = 9
 Dim SchriftTypInfofeld as numeric 		= FONT_NORMAL
 Dim SchriftFarbeInfofeld as numeric 	= COLOR_BLACK
-'Schriftart fÃ¼r Infoblock
+'Schriftart für Infoblock
 Dim SchriftArtInfofeld as FontType = CreateFont(SchriftFontInfofeld, SchriftGroesseInfofeld, SchriftTypInfofeld, SchriftFarbeInfofeld)
 'Seitennummer im Infoblock anzeigen Ja/Nein
 Dim nInfoFeldMitSeitennummer as bool = JA
 
-' Parameter fÃ¼r den Ausdruck einer Infozeile statt des Infoblocks
+' Parameter für den Ausdruck einer Infozeile statt des Infoblocks
 Dim bInfoZeileStattInfoBlockAbSeite2 As bool = false
 'Position InfoZeile oben
 Dim nInfoZeileOben As Numeric
-'Schriftparameter fÃ¼r Infozeile
+'Schriftparameter für Infozeile
 Dim SchriftFontInfozeile as String 		= "Arial"
 Dim SchriftGroesseInfozeile as numeric  = 9
 Dim SchriftTypInfozeile as numeric 		= FONT_NORMAL
@@ -316,7 +316,7 @@ Dim SchriftFarbeInfozeile as numeric 	= COLOR_BLACK
 Dim bMitLogoAufSeite1 as bool = JA
 'Firmenlogo ab Seite 2 anzeigen JA/NEIN
 Dim bMitLogoAbSeite2 as bool = JA
-'Quelle Firmenlogo fÃ¼r Formular
+'Quelle Firmenlogo für Formular
 Dim sFirmenLogoQuelle as String = ""
 'Position Firmenlogo links
 Dim nFirmenLogoLinks as Numeric = nRandLinks + 12 cm
@@ -324,7 +324,7 @@ Dim nFirmenLogoLinks as Numeric = nRandLinks + 12 cm
 Dim nFirmenLogoOben as Numeric = nRandOben + 3 cm
 'Breite Firmenlogo
 Dim nFirmenLogoBreite as Numeric = 5 cm
-'HÃ¶he Firmenlogo 
+'Höhe Firmenlogo 
 Dim nFirmenLogoHoehe as Numeric = 2.5 cm
 
 'Zahlungsbedingungen anzeigen JA/NEIN
@@ -334,17 +334,17 @@ Dim bMitLieferart as bool 				= JA
 'Nachbemerkungen anzeigen JA/NEIN
 Dim bMitNachbemerkungen as bool 		= JA
 
-' freies Textfeld fÃ¼r jedes Formular, wird am Ende des Formulars angehÃ¤ngt
+' freies Textfeld für jedes Formular, wird am Ende des Formulars angehängt
 'Freies Textfeld im Formular anzeigen JA/NEIN
 Dim bMitZusatzText 				as bool 		= JA
 'ZusatzText
 Dim sZusatzText 					as String 	= ""
-'Schriftparameter fÃ¼r Zusatztext
+'Schriftparameter für Zusatztext
 Dim SchriftFontZusatztext 		as String 	= "Arial"
 Dim SchriftGroesseZusatztext 	as numeric	= 9
 Dim SchriftTypZusatztext 		as numeric 	= FONT_NORMAL
 Dim SchriftFarbeZusatztext 	as numeric 	= COLOR_BLACK
-'Schriftart fÃ¼r Infoblock
+'Schriftart für Infoblock
 Dim SchriftArtZusatztext 		as FontType = CreateFont(SchriftFontZusatztext, SchriftGroesseZusatztext, SchriftTypZusatztext, SchriftFarbeZusatztext)
 
 
@@ -363,12 +363,12 @@ Dim VertLinienArt as PenType			= PEN_SOLID
 Dim nFarbe as Numeric					= COLOR_BLACK
 
 ' Optionen
-' WÃ¤hrung als Text darstellen JA/NEIN
+' Währung als Text darstellen JA/NEIN
 ' wenn NEIN, wird Symbol dargestellt
 ' Symbol			Text
-' â‚¬				EUR
+' €				EUR
 dim bWaehrungAlsText as bool 	= NEIN
-' der Text fÃ¼r die Darstellung der Ust
+' der Text für die Darstellung der Ust
 dim sUstText as string			= "Ust."
 
 dim strRabatt as string			= ""
@@ -397,14 +397,14 @@ Dim bAuftrhatNebenleistung as bool = false
 Dim bAuftrhatLohnleistung as bool = false
 
 '////////////////////////////////////////////////////////////////////////////////////////////////////
-' die Breiten in AbhÃ¤ngigkeit von Tabellentyp (Auftrag oder Lieferschein), sowie der Tabellennummer
+' die Breiten in Abhängigkeit von Tabellentyp (Auftrag oder Lieferschein), sowie der Tabellennummer
 ' setzen
 
 	' Tabelle_1 mit Pos, Menge, Art.Nr., Text, Einzelpreis, Rabatt, Gesamtpreis
 	if nTabelle = TABELLE_1 then
 		bSteuerStattRabatt = NEIN
-		' wenn anderen Spaltenbreiten fÃ¼r diesen Tabellentyp gewÃ¼nscht, dann kÃ¶nnen die Werte hier
-		' Ã¼berschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
+		' wenn anderen Spaltenbreiten für diesen Tabellentyp gewünscht, dann können die Werte hier
+		' überschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
 		'nBreiteSpalte_1 = 0.80 cm			'Pos
 		'nBreiteSpalte_2 = 3.00	cm			'Menge
 		'nBreiteSpalte_3 = 2.00	cm			'Art.-Nr
@@ -419,11 +419,11 @@ Dim bAuftrhatLohnleistung as bool = false
 		end if 
 	end if
 	' Tabelle_2 mit Pos, Menge, Text, Einzelpreis, Rabatt, Gesamtpreis
-	' Art.-Nr entfÃ¤llt, indem Spaltenbreite auf 0 gesetzt wird
+	' Art.-Nr entfällt, indem Spaltenbreite auf 0 gesetzt wird
 	if nTabelle = TABELLE_2 then
 		bSteuerStattRabatt = NEIN
-		' wenn anderen Spaltenbreiten fÃ¼r diesen Tabellentyp gewÃ¼nscht, dann kÃ¶nnen die Werte hier
-		' Ã¼berschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
+		' wenn anderen Spaltenbreiten für diesen Tabellentyp gewünscht, dann können die Werte hier
+		' überschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
 		'nBreiteSpalte_1 = 0.80 cm			'Pos
 		'nBreiteSpalte_2 = 3.00	cm			'Menge
 		nBreiteSpalte_3 = 0.00	cm			'Art.-Nr
@@ -438,11 +438,11 @@ Dim bAuftrhatLohnleistung as bool = false
 		end if 
 	end if
 	' Tabelle_3 mit Pos, Menge, Art.Nr., Text, Einzelpreis, Gesamtpreis
-	' Rabatt entfÃ¤llt, indem Spaltenbreite auf 0 gesetzt wird
+	' Rabatt entfällt, indem Spaltenbreite auf 0 gesetzt wird
 	if nTabelle = TABELLE_3 then
 		bSteuerStattRabatt = NEIN
-		' wenn anderen Spaltenbreiten fÃ¼r diesen Tabellentyp gewÃ¼nscht, dann kÃ¶nnen die Werte hier
-		' Ã¼berschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
+		' wenn anderen Spaltenbreiten für diesen Tabellentyp gewünscht, dann können die Werte hier
+		' überschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
 		'nBreiteSpalte_1 = 0.80 cm			'Pos
 		'nBreiteSpalte_2 = 3.00	cm			'Menge
 		'nBreiteSpalte_3 = 2.00	cm			'Art.-Nr
@@ -460,8 +460,8 @@ Dim bAuftrhatLohnleistung as bool = false
 	' Pos und Art.-Nr entfallen, indem Spaltenbreiten auf 0 gesetzt werden
 	if nTabelle = TABELLE_4 then
 		bSteuerStattRabatt = NEIN
-		' wenn anderen Spaltenbreiten fÃ¼r einen Tabellentyp gewÃ¼nscht, dann kÃ¶nnen die Werte hier
-		' Ã¼berschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
+		' wenn anderen Spaltenbreiten für einen Tabellentyp gewünscht, dann können die Werte hier
+		' überschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
 		nBreiteSpalte_1 = 0.00 cm			'Pos
 		'nBreiteSpalte_2 = 3.00	cm			'Menge
 		nBreiteSpalte_3 = 0.00 cm			'Art.-Nr
@@ -479,8 +479,8 @@ Dim bAuftrhatLohnleistung as bool = false
 	' Art.-Nr und Rabatt entfallen, indem Spaltenbreiten auf 0 gesetzt werden
 	if nTabelle = TABELLE_5 then
 		bSteuerStattRabatt = NEIN
-		' wenn anderen Spaltenbreiten fÃ¼r diesen Tabellentyp gewÃ¼nscht, dann kÃ¶nnen die Werte hier
-		' Ã¼berschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
+		' wenn anderen Spaltenbreiten für diesen Tabellentyp gewünscht, dann können die Werte hier
+		' überschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
 		'nBreiteSpalte_1 = 0.80 cm			'Pos
 		'nBreiteSpalte_2 = 3.00	cm			'Menge
 		nBreiteSpalte_3 = 0.00 cm			'Art.-Nr
@@ -498,8 +498,8 @@ Dim bAuftrhatLohnleistung as bool = false
 	' Pos, Art.-Nr und Rabatt entfallen, indem Spaltenbreiten auf 0 gesetzt werden
 	if nTabelle = TABELLE_6 then
 		bSteuerStattRabatt = NEIN
-		' wenn anderen Spaltenbreiten fÃ¼r diesen Tabellentyp gewÃ¼nscht, dann kÃ¶nnen die Werte hier
-		' Ã¼berschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
+		' wenn anderen Spaltenbreiten für diesen Tabellentyp gewünscht, dann können die Werte hier
+		' überschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
 		nBreiteSpalte_1 = 0.00 cm			'Pos
 		'nBreiteSpalte_2 = 3.00	cm			'Menge
 		nBreiteSpalte_3 = 0.00	cm			'Art.-Nr
@@ -516,8 +516,8 @@ Dim bAuftrhatLohnleistung as bool = false
 	' Tabelle_1 mit Pos, Menge, Art.Nr., Text, Einzelpreis, USt., Gesamtpreis
 	if nTabelle = TABELLE_7 then
 		bSteuerStattRabatt = JA
-		' wenn anderen Spaltenbreiten fÃ¼r diesen Tabellentyp gewÃ¼nscht, dann kÃ¶nnen die Werte hier
-		' Ã¼berschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
+		' wenn anderen Spaltenbreiten für diesen Tabellentyp gewünscht, dann können die Werte hier
+		' überschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
 		'nBreiteSpalte_1 = 0.80 cm			'Pos
 		'nBreiteSpalte_2 = 3.00	cm			'Menge
 		'nBreiteSpalte_3 = 2.00	cm			'Art.-Nr
@@ -532,11 +532,11 @@ Dim bAuftrhatLohnleistung as bool = false
 		end if 
 	end if
 	' Tabelle_2 mit Pos, Menge, Text, Einzelpreis, Ust., Gesamtpreis
-	' Art.-Nr entfÃ¤llt, indem Spaltenbreite auf 0 gesetzt wird
+	' Art.-Nr entfällt, indem Spaltenbreite auf 0 gesetzt wird
 	if nTabelle = TABELLE_8 then
 		bSteuerStattRabatt = JA
-		' wenn anderen Spaltenbreiten fÃ¼r diesen Tabellentyp gewÃ¼nscht, dann kÃ¶nnen die Werte hier
-		' Ã¼berschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
+		' wenn anderen Spaltenbreiten für diesen Tabellentyp gewünscht, dann können die Werte hier
+		' überschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
 		'nBreiteSpalte_1 = 0.80 cm			'Pos
 		'nBreiteSpalte_2 = 3.00	cm			'Menge
 		nBreiteSpalte_3 = 0.00	cm			'Art.-Nr
@@ -554,8 +554,8 @@ Dim bAuftrhatLohnleistung as bool = false
 	' Pos und Art.-Nr entfallen, indem Spaltenbreiten auf 0 gesetzt werden
 	if nTabelle = TABELLE_9 then
 		bSteuerStattRabatt = JA
-		' wenn anderen Spaltenbreiten fÃ¼r einen Tabellentyp gewÃ¼nscht, dann kÃ¶nnen die Werte hier
-		' Ã¼berschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
+		' wenn anderen Spaltenbreiten für einen Tabellentyp gewünscht, dann können die Werte hier
+		' überschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
 		nBreiteSpalte_1 = 0.00 cm			'Pos
 		'nBreiteSpalte_2 = 3.00	cm			'Menge
 		nBreiteSpalte_3 = 0.00 cm			'Art.-Nr
@@ -572,8 +572,8 @@ Dim bAuftrhatLohnleistung as bool = false
 	' Tabelle_10 mit Pos, Menge, Art.Nr., Text, Einzelpreis, Rabatt, USt., Gesamtpreis
 	if nTabelle = TABELLE_10 then
 		bSteuerStattRabatt = NEIN
-		' wenn anderen Spaltenbreiten fÃ¼r diesen Tabellentyp gewÃ¼nscht, dann kÃ¶nnen die Werte hier
-		' Ã¼berschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
+		' wenn anderen Spaltenbreiten für diesen Tabellentyp gewünscht, dann können die Werte hier
+		' überschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
 		'nBreiteSpalte_1 = 0.80 cm			'Pos
 		'nBreiteSpalte_2 = 3.00	cm			'Menge
 		'nBreiteSpalte_3 = 2.00	cm			'Art.-Nr
@@ -590,11 +590,11 @@ Dim bAuftrhatLohnleistung as bool = false
 	end if
 
 	' Tabelle_11 mit Pos, Menge, Text, Einzelpreis, Rabatt, Ust., Gesamtpreis
-	' Art.-Nr entfÃ¤llt, indem Spaltenbreite auf 0 gesetzt wird
+	' Art.-Nr entfällt, indem Spaltenbreite auf 0 gesetzt wird
 	if nTabelle = TABELLE_11 then
 		bSteuerStattRabatt = NEIN
-		' wenn anderen Spaltenbreiten fÃ¼r diesen Tabellentyp gewÃ¼nscht, dann kÃ¶nnen die Werte hier
-		' Ã¼berschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
+		' wenn anderen Spaltenbreiten für diesen Tabellentyp gewünscht, dann können die Werte hier
+		' überschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
 		'nBreiteSpalte_1 = 0.80 cm			'Pos
 		'nBreiteSpalte_2 = 3.00	cm			'Menge
 		nBreiteSpalte_3 = 0.00	cm			'Art.-Nr
@@ -613,8 +613,8 @@ Dim bAuftrhatLohnleistung as bool = false
 	' Pos und Art.-Nr entfallen, indem Spaltenbreiten auf 0 gesetzt werden
 	if nTabelle = TABELLE_12 then
 		bSteuerStattRabatt = NEIN
-		' wenn anderen Spaltenbreiten fÃ¼r einen Tabellentyp gewÃ¼nscht, dann kÃ¶nnen die Werte hier
-		' Ã¼berschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
+		' wenn anderen Spaltenbreiten für einen Tabellentyp gewünscht, dann können die Werte hier
+		' überschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
 		nBreiteSpalte_1 = 0.00 cm			'Pos
 		'nBreiteSpalte_2 = 3.00	cm			'Menge
 		nBreiteSpalte_3 = 0.00 cm			'Art.-Nr
@@ -632,8 +632,8 @@ Dim bAuftrhatLohnleistung as bool = false
 	' Lieferscheintabellen
 	' Tabelle_1 mit Pos, Menge, Art.Nr., Gewicht(kg), Text
 	if nLieferTabelle = TABELLE_1 then
-		' wenn anderen Spaltenbreiten fÃ¼r diesen Tabellentyp gewÃ¼nscht, dann kÃ¶nnen die Werte hier
-		' Ã¼berschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
+		' wenn anderen Spaltenbreiten für diesen Tabellentyp gewünscht, dann können die Werte hier
+		' überschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
 		'nLieferBreiteSpalte_1 = 0.80 cm		'Pos
 		'nLieferBreiteSpalte_2 = 3.00 cm		'Menge
 		'nLieferBreiteSpalte_3 = 2.00 cm		'Art.Nr.
@@ -646,10 +646,10 @@ Dim bAuftrhatLohnleistung as bool = false
 		end if
 	end if
 	' Tabelle_2 mit Pos, Menge, Gewicht(kg), Text
-	' Art.-Nr entfÃ¤llt, indem Spaltenbreite auf 0 gesetzt wird
+	' Art.-Nr entfällt, indem Spaltenbreite auf 0 gesetzt wird
 	if nLieferTabelle = TABELLE_2 then
-		' wenn anderen Spaltenbreiten fÃ¼r diesen Tabellentyp gewÃ¼nscht, dann kÃ¶nnen die Werte hier
-		' Ã¼berschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
+		' wenn anderen Spaltenbreiten für diesen Tabellentyp gewünscht, dann können die Werte hier
+		' überschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
 		'nLieferBreiteSpalte_1 = 0.80 cm		'Pos
 		'nLieferBreiteSpalte_2 = 3.00 cm		'Menge
 		nLieferBreiteSpalte_3 = 0.00 cm		'Art.Nr.
@@ -664,8 +664,8 @@ Dim bAuftrhatLohnleistung as bool = false
 	' Tabelle_3 mit Menge, Gewicht(kg), Text
 	' Art.-Nr und Menge entfallen, indem Spaltenbreiten auf 0 gesetzt werden
 	if nLieferTabelle = TABELLE_3 then
-		' wenn anderen Spaltenbreiten fÃ¼r diesen Tabellentyp gewÃ¼nscht, dann kÃ¶nnen die Werte hier
-		' Ã¼berschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
+		' wenn anderen Spaltenbreiten für diesen Tabellentyp gewünscht, dann können die Werte hier
+		' überschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
 		nLieferBreiteSpalte_1 = 0.00 cm		'Pos
 		'nLieferBreiteSpalte_2 = 3.00 cm		'Menge
 		nLieferBreiteSpalte_3 = 0.00 cm		'Art.Nr.
@@ -680,8 +680,8 @@ Dim bAuftrhatLohnleistung as bool = false
 	' Tabelle_4 mit Position, Menge, Art.nr, Text 
 	' Art.-Nr und Menge entfallen, indem Spaltenbreiten auf 0 gesetzt werden
 	if nLieferTabelle = TABELLE_4 then
-		' wenn anderen Spaltenbreiten fÃ¼r diesen Tabellentyp gewÃ¼nscht, dann kÃ¶nnen die Werte hier
-		' Ã¼berschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
+		' wenn anderen Spaltenbreiten für diesen Tabellentyp gewünscht, dann können die Werte hier
+		' überschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
 		'nLieferBreiteSpalte_1 = 0.80 cm		'Pos
 		'nLieferBreiteSpalte_2 = 3.00 cm		'Menge
 		'nLieferBreiteSpalte_3 = 2.00 cm		'Art.Nr.
@@ -696,8 +696,8 @@ Dim bAuftrhatLohnleistung as bool = false
 	' Tabelle_5 mit Position, Menge, Text
 	' Art.-Nr und Menge entfallen, indem Spaltenbreiten auf 0 gesetzt werden
 	if nLieferTabelle = TABELLE_5 then
-		' wenn anderen Spaltenbreiten fÃ¼r diesen Tabellentyp gewÃ¼nscht, dann kÃ¶nnen die Werte hier
-		' Ã¼berschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
+		' wenn anderen Spaltenbreiten für diesen Tabellentyp gewünscht, dann können die Werte hier
+		' überschrieben werden, einfach Kommentar entfernen und neue Breite eingeben
 		'nLieferBreiteSpalte_1 = 0.80 cm		'Pos
 		'nLieferBreiteSpalte_2 = 3.00 cm		'Menge
 		nLieferBreiteSpalte_3 = 0.00 cm		'Art.Nr.
@@ -712,10 +712,10 @@ Dim bAuftrhatLohnleistung as bool = false
 
 
 '///////////////////////////////////////////////////////////////////////////////////////
-'Hilfsvariablen fÃ¼r die Formulargestaltung
+'Hilfsvariablen für die Formulargestaltung
 
 Dim KopfLinien as PenType
-' die StÃ¤rke der Linie
+' die Stärke der Linie
 Dim nRand as Numeric
 Dim nGewicht as Numeric
 Dim nGewichtSumme as Numeric
@@ -758,7 +758,7 @@ Dim Steuern as Bool
 Dim hatVersandPosition As Bool = False
 Dim hatNebenleistungsPosition As Bool = False
 
-' Hilfsvariablen fÃ¼r die Ausgabe der Steuern
+' Hilfsvariablen für die Ausgabe der Steuern
 Dim nNetTeilsum as Numeric
 Dim nBrutTeilsum as Numeric
 Dim nUstsum as Numeric
@@ -771,22 +771,22 @@ Dim fResetPage as Bool = false
 ' aktuelle interne Auftragsnummer
 Dim nAuftragNr as numeric = -1
 Dim sAuftrag 	as string = ""
-Dim nCount as numeric     'StÃ¼cklistenpositionen
-Dim ArtikelLine as Numeric  'Artikelpos. HÃ¶he
+Dim nCount as numeric     'Stücklistenpositionen
+Dim ArtikelLine as Numeric  'Artikelpos. Höhe
 
 
 
 '///////////////////////////////////////////////////////////////////////////////////
-'Variablen fÃ¼r die Tabellen
+'Variablen für die Tabellen
 
-'Definition der Ãœberschriftenzeile der Tabelle
+'Definition der Überschriftenzeile der Tabelle
 Dim C_H_Head as CellType
 
-'Die erste Zeile der Ãœberschriftenzeile
+'Die erste Zeile der Überschriftenzeile
 Dim C_H_Zeile 		as CellType
 Dim C_HU_Zeile		as CellType
 
-'Die Zellen der Ãœberschriftenzeile
+'Die Zellen der Überschriftenzeile
 Dim C_H_Spalte_1 	as Celltype
 Dim C_H_Spalte_2 	as Celltype
 Dim C_H_Spalte_3 	as Celltype
@@ -797,7 +797,7 @@ Dim C_H_Spalte_6 	as CellType
 Dim C_H_Spalte_6a 	as CellType
 Dim C_H_Spalte_7 	as Celltype
 
-'Definiton der Zelle des TabellenkÃ¶rpers
+'Definiton der Zelle des Tabellenkörpers
 Dim C_Zeile			as CellType
 
 'Definition der Zellen in einer Tabellenzeile
@@ -812,7 +812,7 @@ Dim C_Spalte_7 	as CellType
 Dim C_Spalte_7a	as CellType
 Dim C_Spalte_8 	as CellType
 
-'Definition der Spalten fÃ¼r die StÃ¼cklistenartikel
+'Definition der Spalten für die Stücklistenartikel
 Dim C_Zeile_s			as CellType
 Dim C_Spalte_1s 	as CellType
 Dim C_Spalte_2s 	as CellType
@@ -880,12 +880,12 @@ Dim C_S_Forder_3	as CellType
 Dim C_S_Forder_4	as CellType
 
 
-'Definition der Zellen fÃ¼r den Ãœbertrag
+'Definition der Zellen für den Übertrag
 Dim C_HU_Spalte_1 	as CellType
 Dim C_HU_Spalte_2 	as CellType
 Dim C_S_Bottom	   	as CellType
 Dim C_S_Top 			as CellType
-' Hilfsvariablen fÃ¼r die Ausgabe der Steuern
+' Hilfsvariablen für die Ausgabe der Steuern
 Dim C_S_Steuern as CellType
 Dim C_S_St_Spalte_1 as CellType
 Dim C_S_St_Spalte_2 as CellType
@@ -894,7 +894,7 @@ Dim C_S_St_Spalte_4 as CellType
 Dim C_S_St_Spalte_5 as CellType
 Dim C_S_St_Spalte_6 as CellType
 
-' Hilfsvariablen fÃ¼r die Ausgabe der Steuern Brutto
+' Hilfsvariablen für die Ausgabe der Steuern Brutto
 Dim C_S_SteuernBrutto as CellType
 Dim C_S_St_Spalte_1a as CellType
 Dim C_S_St_Spalte_1b as CellType
@@ -917,14 +917,14 @@ Dim Betrag as Numeric
 
 '////////////////////////////////////////////////////////////////////////////////////
 'Funktion - LeereZellen()
-'LÃ¶schen einer Zeile der Tabelle 
+'Löschen einer Zeile der Tabelle 
 '/////////////////////////////////////////////////////////////
 Function LeereZellen()
 	ClearRow(C_Zeile, "")
 	ClearRow(C_Zeile_s, "")
 End Function
 
-' Ã¼berschreibt Standardvorgaben fÃ¼r die Formulargestaltung mit Programmwerten aus der Faktura
+' überschreibt Standardvorgaben für die Formulargestaltung mit Programmwerten aus der Faktura
 if LAYOUT_DURCH_PROGRAMM then
 	Include "pcfkini.lsf"
 end if	
@@ -1035,11 +1035,11 @@ Dim nCurrencyOriginalFormat as numeric
 nCurrencyOriginalFormat = nCurrencyFormatDefault
 
 if bMitNullBetrag = FALSE then
-	nCurrencyFormatDefault = nCurrencyFormatDefault + CURRENCY_NO_ZERO ' NullbetrÃ¤ge nicht anzeigen
+	nCurrencyFormatDefault = nCurrencyFormatDefault + CURRENCY_NO_ZERO ' Nullbeträge nicht anzeigen
 end if
 
 if is(DV_FREIMACHUNG) then
-	'Schriftart fÃ¼r Absender und Sichtfenster setzen
+	'Schriftart für Absender und Sichtfenster setzen
 	SchriftArtSichtfenster = CreateFont(SchriftFontSIG, 10, FONT_NORMAL, COLOR_BLACK)
 	'keine Marken am linken Rand
 	bFalzmarkeOben = False
@@ -1047,7 +1047,7 @@ if is(DV_FREIMACHUNG) then
 	bLochmarke = False	
 end if
 
-'Schriftart fÃ¼r Infozeile
+'Schriftart für Infozeile
 Dim SchriftArtInfozeile as FontType = CreateFont(SchriftFontInfozeile, SchriftGroesseInfozeile, SchriftTypInfozeile, SchriftFarbeInfozeile)
 
 include "SepaPreNotification.lsf"
@@ -1062,7 +1062,7 @@ else
 End if
 
 ' wenn die Faktura nicht mit einem Formularassi arbeiten, oder es keine LayoutInit durch das Programm gibt,
-' dann mÃ¼ssen diese Werte aus einem anderen Bereich von der Faktura geholt werden
+' dann müssen diese Werte aus einem anderen Bereich von der Faktura geholt werden
 if LAYOUT_DURCH_PROGRAMM = NEIN then 
 	'Farbe der Schraffur im Kopf
 	nSchraffurFarbeKopf = GetNumeric(ALLG_TABKOPF_HINTER_FARBE)
@@ -1182,7 +1182,7 @@ Function PrintInfoBlock(Tabs as String, Schriftart as FontType)
 	SetTabs(Tabs)
 	SelectFont(Schriftart)
 
-	' Ã¼berprÃ¼fen, ob Absender noch auf erste Seite passt
+	' überprüfen, ob Absender noch auf erste Seite passt
 	Dim MaximaleHoehe as numeric = GetAreaLength() - 4 cm
 	if	nInfoFeldOben > MaximaleHoehe then
 		nInfoFeldOben = MaximaleHoehe	
@@ -1206,7 +1206,7 @@ Function PrintInfoBlock(Tabs as String, Schriftart as FontType)
 		sAuftrag = Get(AUFTR_AUFTRAG_TEXT)
 		TL(Tab + sAuftrag + " Nr.:" + Tab + Get(AUFTR_BELEG_NR))
 	end if
-	' wenn Bestellung, Bestellanfrage, Wareneingang, RÃ¼cksendung
+	' wenn Bestellung, Bestellanfrage, Wareneingang, Rücksendung
 	If (is(AUFTR_IST_B)) or (is(AUFTR_IST_BESTELLANFRAGE)) or (is (AUFTR_IST_WARENEINGANG)) or (is(AUFTR_IST_RUECKSENDUNG)) or (is(AUFTR_IST_RECHNUNG_EING)) or (is(AUFTR_IST_GUTSCHRIFT_EK)) or (is(AUFTR_IST_GUTSCHRIFT_LIEF))then
 			IF Get(AUFTR_KDNR_BEI_LIEF) <> "" Then									' wenn Kundennummer beim Lieferanten vorhanden, dann ausdrucken
 				TL(Tab + "Lief.-Nr.:" + Tab + Get(AUFTR_KDNR_BEI_LIEF))		
@@ -1215,7 +1215,7 @@ Function PrintInfoBlock(Tabs as String, Schriftart as FontType)
 				TL(Tab + "KD.Nr. b. Lief.: " + Tab + Get(LF_KUNDENNR_BEI_LIEFERANT))
 			end if 
 	else	
-			if Get(AUFTR_KDNR_BEI_LIEF) <> "" then	'bei STORNO von EK AUFTRÃ„GEN...
+			if Get(AUFTR_KDNR_BEI_LIEF) <> "" then	'bei STORNO von EK AUFTRÄGEN...
 				TL(Tab + "Lief.-Nr.:" + Tab + Get(AUFTR_KDNR_BEI_LIEF))		
 				IF Get(LF_KUNDENNR_BEI_LIEFERANT) <> "" then
 					TL(Tab + "KD.Nr. b. Lief.: " + Tab + Get(LF_KUNDENNR_BEI_LIEFERANT))
@@ -1305,7 +1305,7 @@ Function PrintInfoBlock(Tabs as String, Schriftart as FontType)
 		end if
 	end if	
 '///////////////////////////////////////////////////////////////////////////////////////////////////7
-		'Auftragsfreifelder aus AuftrÃ¤gen
+		'Auftragsfreifelder aus Aufträgen
 		If (IS(MIT_AFREIFELD1)) AND  (GetNumeric(LAY_COMBO_FF1) = 0) AND (Get(AUFTR_FREIFELD1 ) <> "") then
 			If Get(TEXT_AFREIFELD1 )<> ""  then
 				TL(Tab + Get(TEXT_AFREIFELD1 ) + ":"  + Tab + Get(AUFTR_FREIFELD1))
@@ -1349,7 +1349,7 @@ Function PrintInfoBlock(Tabs as String, Schriftart as FontType)
 			end if
 		end if
 		if Get(KD_NR) <> "" then
-			'Freifelder aus Kundendaten nur bei VerkaufsauftrÃ¤gen verfÃ¼gbar...
+			'Freifelder aus Kundendaten nur bei Verkaufsaufträgen verfügbar...
 				If IS(MIT_KFREIFELD1) AND (GetNumeric(LAY_COMBO_FF4) = 0) AND (Get(KD_FREIES_FELD1 ) <> "") then
 					If Get(KD_FREIFELD1_TITEL )<> "" then
 						TL(Tab + Get(KD_FREIFELD1_TITEL ) + ":"  + Tab + Get(KD_FREIES_FELD1))
@@ -1394,7 +1394,7 @@ Function PrintInfoBlock(Tabs as String, Schriftart as FontType)
 					end if
 				end if
 		else
-			'Freifelder Lieferantendaten nur bei EinkaufsauftrÃ¤gen verfÃ¼gbar...
+			'Freifelder Lieferantendaten nur bei Einkaufsaufträgen verfügbar...
 '///////////////////////////
 			If Get(AUFTR_KDNR_BEI_LIEF) <> "" then
 				If IS(MIT_LFREIFELD1) AND (GetNumeric(LAY_COMBO_FF7) = 0) AND (Get(LF_FREIES_FELD1 ) <> "") then
@@ -1522,7 +1522,7 @@ Function PrintInfoZeile()
 	SetTabs("L600 L1600")
 		SelectFont(SchriftArtInfozeile)
 		PositionVonOben = (nInfoZeileOben * 100)
-		'Position bezogen auf SeitenmaÃŸe
+		'Position bezogen auf Seitenmaße
 		SetPos(0, PositionVonOben)
 		' Infozeile ab Seite 2
 		TL(Get(AUFTR_AUFTRAG_TEXT) + " Nr. " + Get("R", 5) + Tab + "vom  " + FormatDate("%d.%m.%Y", GetDate("R", 6)) + Tab + "Seite:  "  + FormatNumeric("%.0f", nAuftragPage))
@@ -1546,15 +1546,15 @@ End Function
 'BetreffText formatieren und ausgeben
 '/////////////////////////////////////////////////////////////
 Function PrintBetreffText(Schriftart1 as FontType, Schriftart2 as FontType)
-	' Text fÃ¼r die Auftragsart
+	' Text für die Auftragsart
 	dim sAuftrag 	as string = ""
 	
-	' Ã¼berprÃ¼fen, ob Absender noch auf erste Seite passt
+	' überprüfen, ob Absender noch auf erste Seite passt
 	Dim MaximaleHoehe as numeric = GetAreaLength() - 4 cm
 	if	nBetrefftextOben > MaximaleHoehe then
 		nBetrefftextOben = MaximaleHoehe	
 	end if
-	'Position bezogen auf SeitenmaÃŸe
+	'Position bezogen auf Seitenmaße
 	if is(DV_FREIMACHUNG) then
 		'Poststelle: Betreffzeile hat Mindestabstand von oben!
 		if  nBetrefftextOben < nPostelleBetreffTextOben then		
@@ -1626,7 +1626,7 @@ Function PrintBetreffText(Schriftart1 as FontType, Schriftart2 as FontType)
 	' Ausgabe der Auftragsbeschreibung nur auf der 1. Seite
 	if nAuftragPage = 1 then
 		SelectFont(Schriftart2)
-		LF  'leere Zeile zur Auftragsart nicht verÃ¤ndern
+		LF  'leere Zeile zur Auftragsart nicht verändern
 		if bBetreffMitLieferadresse then
 			if is(AUFTR_IST_STORNO) = false then
 				if is(AUFTR_IST_LS) then
@@ -1640,7 +1640,7 @@ Function PrintBetreffText(Schriftart1 as FontType, Schriftart2 as FontType)
 
 
 	'///////////////////////////////////////////////////////////////////////////////////////////////////7
-		'Auftragsfreifelder aus AuftrÃ¤gen
+		'Auftragsfreifelder aus Aufträgen
 		If (IS(MIT_AFREIFELD1)) AND  (GetNumeric(LAY_COMBO_FF1) = 1) AND (Get(AUFTR_FREIFELD1 ) <> "") then
 			If Get(TEXT_AFREIFELD1 )<> ""  then
 				TL(Get(TEXT_AFREIFELD1 ) + ": "  + Get(AUFTR_FREIFELD1))
@@ -1684,7 +1684,7 @@ Function PrintBetreffText(Schriftart1 as FontType, Schriftart2 as FontType)
 			end if
 		end if
 		if Get(KD_NR) <> "" then
-			'Freifelder aus Kundendaten nur bei VerkaufsauftrÃ¤gen verfÃ¼gbar...
+			'Freifelder aus Kundendaten nur bei Verkaufsaufträgen verfügbar...
 				If IS(MIT_KFREIFELD1) AND (GetNumeric(LAY_COMBO_FF4) = 1) AND (Get(KD_FREIES_FELD1 ) <> "") then
 					If Get(KD_FREIFELD1_TITEL )<> "" then
 						TL(Get(KD_FREIFELD1_TITEL ) + ": " + Get(KD_FREIES_FELD1))
@@ -1728,7 +1728,7 @@ Function PrintBetreffText(Schriftart1 as FontType, Schriftart2 as FontType)
 					end if
 				end if
 		else
-			'Freifelder Lieferantendaten nur bei EinkaufsauftrÃ¤gen verfÃ¼gbar...
+			'Freifelder Lieferantendaten nur bei Einkaufsaufträgen verfügbar...
 '///////////////////////////
 			If Get(AUFTR_KDNR_BEI_LIEF) <> "" then
 					If IS(MIT_LFREIFELD1) AND (GetNumeric(LAY_COMBO_FF7) = 1) AND (Get(LF_FREIES_FELD1 ) <> "") then
@@ -1816,7 +1816,7 @@ End Function
 'ZusatzText formatieren und ausgeben
 '/////////////////////////////////////////////////////////////
 Function PrintZusatzText(Schriftart as FontType)
-	'Position bezogen auf SeitenmaÃŸe
+	'Position bezogen auf Seitenmaße
 '	SetPos(nZusatzTextLinks-nRandLinks, nZusatzTextOben-nRandOben)
 	SelectFont(Schriftart)
 	If Get(LAY_ZUSATZTEXT) <> "" Then 
@@ -1832,7 +1832,7 @@ include "Steuerblock.lsf"
 
 '////////////////////////////////////////////////////////////////////////////////////
 'Funktion - ZaehleSteuersaetze
-'Hilfsfunktion fÃ¼r die Ermittlung der Anzahl der SteuersÃ¤tze, wird fÃ¼r die Berechnung der Ausgabe benÃ¶tigt
+'Hilfsfunktion für die Ermittlung der Anzahl der Steuersätze, wird für die Berechnung der Ausgabe benötigt
 '/////////////////////////////////////////////////////////////
 Function ZaehleSteuersaetze() as Numeric
 	ZaehleSteuerSaetze = 0
@@ -1887,7 +1887,7 @@ Function SIGKopfZeile()
 	DrawImage(-nRandLinks, -nRandOben, nSeitenBreite, nSeitenHoehe, strSIGBackgroundBild)
 
 	SetPos(0, 72)
-	TL("Smart Industry Group GmbH | Von-Werthern-Str. 4A | 96487 DÃ¶rfles-Esbach | Deutschland")
+	TL("Smart Industry Group GmbH | Von-Werthern-Str. 4A | 96487 Dörfles-Esbach | Deutschland")
 
 	DrawImage(1225, -112, 430, 286, strSIGLogoBild)
 	DrawImage(0, 119, 1700, 4, strSIGGreenLineBild)
@@ -1950,7 +1950,7 @@ Function FussZeile()
 	
 	end if
 	
-	'wann darf FuÃŸzeile angezeigt werden ?
+	'wann darf Fußzeile angezeigt werden ?
 	if bMitFusszeileAufSeite1 and nAuftragPage <= 1 then
 		bFusszeileAnzeigen = TRUE
 	end if
@@ -1966,7 +1966,7 @@ Function FussZeile()
 			lf
 		end if
 
-		' die Schrift fÃ¼r die Fusszeile auswÃ¤hlen
+		' die Schrift für die Fusszeile auswählen
 		SelectFont(SchriftArtFusszeile)
 
 		if bFreieFusszeile then
@@ -1983,10 +1983,10 @@ Function FussZeile()
 					'----- BANK 1 ausgeben -----
 					strZeile = Tab + Get(FA_BANK_1)
 					if bMitFussKonto then
-						strZeile = strZeile + " Â· BLZ " + Get(FA_BLZ_1) + " Â· Kto.-Nr. " + Get(FA_KTONR_1)
+						strZeile = strZeile + " · BLZ " + Get(FA_BLZ_1) + " · Kto.-Nr. " + Get(FA_KTONR_1)
 					end if
 					If bHasAbweichKtoInhaber1 Then
-						strZeile = strZeile + " Â· " + "Kto.Inh. " + Get(FA_KONTOINHABER)
+						strZeile = strZeile + " · " + "Kto.Inh. " + Get(FA_KONTOINHABER)
 					end if
 					if bMitFussKonto Or bHasAbweichKtoInhaber1 then
 						TL( strZeile )
@@ -1996,7 +1996,7 @@ Function FussZeile()
 						if strZeile = "" then
 							strZeile = Tab
 						else
-							strZeile = strZeile + " Â· "
+							strZeile = strZeile + " · "
 						end if
 						strZeile = strZeile + "IBAN  " + Get(FA_IBAN_BANK_1)
 					end if
@@ -2004,7 +2004,7 @@ Function FussZeile()
 						if strZeile = "" then
 							strZeile = Tab
 						else
-							strZeile = strZeile + " Â· "
+							strZeile = strZeile + " · "
 						end if
 						strZeile = strZeile + "BIC  " + Get(FA_BIC_BANK_1)
 					end if
@@ -2017,10 +2017,10 @@ Function FussZeile()
 					'----- BANK 2 ausgeben -----
 					strZeile = Tab + Get(FA_BANK_2)
 					if bMitFussKonto then
-						strZeile = strZeile + " Â· BLZ " + Get(FA_BLZ_2) + " Â· Kto.-Nr. " + Get(FA_KTONR_2)
+						strZeile = strZeile + " · BLZ " + Get(FA_BLZ_2) + " · Kto.-Nr. " + Get(FA_KTONR_2)
 					end if
 					If bHasAbweichKtoInhaber2 Then
-						strZeile = strZeile + " Â· " + "Kto.Inh. " + Get(FA_KONTOINHABER_2)
+						strZeile = strZeile + " · " + "Kto.Inh. " + Get(FA_KONTOINHABER_2)
 					end if
 					if bMitFussKonto Or bHasAbweichKtoInhaber2 then
 						TL( strZeile )
@@ -2030,7 +2030,7 @@ Function FussZeile()
 						if strZeile = "" then
 							strZeile = Tab
 						else
-							strZeile = strZeile + " Â· "
+							strZeile = strZeile + " · "
 						end if
 						strZeile = strZeile + "IBAN  " + Get(FA_IBAN_BANK_2)
 					end if
@@ -2038,7 +2038,7 @@ Function FussZeile()
 						if strZeile = "" then
 							strZeile = Tab
 						else
-							strZeile = strZeile + " Â· "
+							strZeile = strZeile + " · "
 						end if
 						strZeile = strZeile + "BIC  " + Get(FA_BIC_BANK_2)
 					end if
@@ -2077,7 +2077,7 @@ Function FussZeile()
 				end if
 				if bMitFusszeileFzAnschrift Then
 					if Get(FA_FINAMT_UMSATZ_NAME) <> "" then
-						TL(Tab + Get(FA_FINAMT_UMSATZ_NAME) + " Â· " + Get(FA_FINAMT_UMSATZ_STRASSE) + " Â· " + GET(FA_FINAMT_UMSATZ_PLZORT) )
+						TL(Tab + Get(FA_FINAMT_UMSATZ_NAME) + " · " + Get(FA_FINAMT_UMSATZ_STRASSE) + " · " + GET(FA_FINAMT_UMSATZ_PLZORT) )
 
 					end if
 				end if
@@ -2093,7 +2093,7 @@ Function FussZeile()
 						TL(strTemp)
 					end if
 				end if
-			else 'Fusszeile Ã¼ber BlÃ¶cke einstellen
+			else 'Fusszeile über Blöcke einstellen
 				if GetNumeric(LAY_AUSRICHTUNG_OPTION)= 0 '0 bedeutet nicht zentriert (aus V4, da gab es noch kein Logo!)
 				 then 
 
@@ -2345,7 +2345,7 @@ Function SIGFussZeile()
 	SetPos(0, 77)
 	TL("Von-Werthern-Strasse 4A")
 	SetPos(0, 109)
-	TL("96487 DÃ¶rfles-Esbach")
+	TL("96487 Dörfles-Esbach")
 	SetPos(0, 141)
 	TL("Deutschland")
 
@@ -2388,13 +2388,13 @@ Function EventFussZeile()
 	end if
 End Function
 
-' Ereignishandler fÃ¼r die FussZeile setzen
+' Ereignishandler für die FussZeile setzen
 ' Dadurch wird Funktion automatisch bei jedem Seitenende aufgerufen
 SetEventHandler(EVENT_PRINT_FOOTER, EventFussZeile)
 
 '///////////////////////////////////////////////////////////////////////////////////////////////
 'Funktion - Seitenwechsel
-'Funktion wird vor jedem Wechsel der Seite aufgerufen. Es werden alle Elemente auÃŸer der Tabelle gedruckt
+'Funktion wird vor jedem Wechsel der Seite aufgerufen. Es werden alle Elemente außer der Tabelle gedruckt
 'Der Druckbereich ist begrenzt auf den Bereich der in SetBodyMargin() festgelegt wurde
 '/////////////////////////////////////////////////////////////
 Function Seitenwechsel()
@@ -2440,11 +2440,11 @@ Function Seitenwechsel()
 	' nicht tiefer dargestellt werden
 	SetBodyMargin(nRandLinks, nRandOben, nRandRechts, nRandUnten + nFusszeileHoehe + 10)
 
-	' Ausgaben fÃ¼r Seite 1
+	' Ausgaben für Seite 1
 	if nAuftragPage = 1 then
-		' Firmenlogo anzeigen, wenn ausgewÃ¤hlt
+		' Firmenlogo anzeigen, wenn ausgewählt
 		SetFormatNumericOptions(FN_CUSTOM, "","")
-		' Absender anzeigen, wenn ausgewÃ¤hlt
+		' Absender anzeigen, wenn ausgewählt
 
 		if is(FRANKIEREN_MIT_STAMPIT ) Then
 			if bStampitmitAbsender = TRUE then
@@ -2467,7 +2467,7 @@ Function Seitenwechsel()
 		  end if
 		end if
 		
-		' Infofeld anzeigen, wenn ausgewÃ¤hlt
+		' Infofeld anzeigen, wenn ausgewählt
 		if bMitInfofeldAufSeite1 then
 			SetFormatNumericOptions(FN_CUSTOM, ",", "")
 			if bSIGZielLayout then
@@ -2476,7 +2476,7 @@ Function Seitenwechsel()
 				PrintInfoBlock("L" + FormatNumeric("%.0f", nInfofeldLinks-nRandLinks) + "R" + FormatNumeric("%.0f", nInfofeldLinks - nRandLinks + nInfoFeldBreite), SchriftArtInfofeld)
 			end if
 		end if
-		' Betrefftext anzeigen, wenn ausgewÃ¤hlt
+		' Betrefftext anzeigen, wenn ausgewählt
 		if bMitBetrefftextAufSeite1 then
 			if bSIGZielLayout then
 				SIGBetreffText()
@@ -2500,20 +2500,20 @@ Function Seitenwechsel()
 	end if 
 	' Ausgaben ab Seite 2
 	if nAuftragPage > 1  AND bEndeAuftragsbeschreibung = true then
-		' Firmenlogo ab Seite 2 anzeigen, wenn ausgewÃ¤hlt
-		' Absender ab Seite 2 anzeigen, wenn ausgewÃ¤hlt
+		' Firmenlogo ab Seite 2 anzeigen, wenn ausgewählt
+		' Absender ab Seite 2 anzeigen, wenn ausgewählt
 		if bMitAbsenderAbSeite2 then
 			PrintAbsenderZeile2018()
 		end if			
-		'Sichtfenster ab Seite 2 anzeigen, wenn ausgewÃ¤hlt
+		'Sichtfenster ab Seite 2 anzeigen, wenn ausgewählt
 		if bMitSichtfensterAbSeite2 then
 			PrintSichtfenster2018(SchriftArtSichtfenster, "de", false)
 		end if
-		' Betrefftext ab Seite 2 anzeigen, wenn ausgewÃ¤hlt
+		' Betrefftext ab Seite 2 anzeigen, wenn ausgewählt
 		if bMitBetrefftextAbSeite2 then
 			PrintBetreffText(SchriftArtBetrefftext1, SchriftArtBetrefftext2)
 		end if
-		' Infofeld ab Seite 2 anzeigen, wenn ausgewÃ¤hlt
+		' Infofeld ab Seite 2 anzeigen, wenn ausgewählt
 			SetFormatNumericOptions(FN_CUSTOM, ",", "")
 			' Infozeile ?
 			if	bInfoZeileStattInfoBlockAbSeite2 then 
@@ -2550,8 +2550,8 @@ Function EventSeitenwechsel()
 	SetBodyMargin(nRandLinks, nRandOben , nRandRechts, nRandUnten + nFusszeileHoehe + 10)
 
 	Seitenwechsel()
-	' obere Position des Rumpfbereichs verÃ¤ndern, damit Tabelle nach unten versetzt dargestellt wird
-	' Die Augabeposition der Tabelle ab Seite 2 kann nur Ã¼ber diesen Weg verÃ¤ndert werden. 
+	' obere Position des Rumpfbereichs verändern, damit Tabelle nach unten versetzt dargestellt wird
+	' Die Augabeposition der Tabelle ab Seite 2 kann nur über diesen Weg verändert werden. 
 	if nAuftragPage > 1 then 
 		SetBodyMargin(nRandLinks, nTabelleObenAbSeite2, nRandRechts, nRandUnten + nFusszeileHoehe + 10)
 	end if
@@ -2569,7 +2569,7 @@ Function EventSeitenwechsel()
 	
 End Function
 
-' Ereignishandler fÃ¼r Anfang einer Seite setzen
+' Ereignishandler für Anfang einer Seite setzen
 ' Dadurch wird Funktion automatisch bei jedem Seitenanfang aufgerufen
 SetEventHandler(EVENT_START_PAGE, EventSeitenwechsel)
 
@@ -2608,7 +2608,7 @@ dim bOK as bool = False
 dim wertSkontoSum as numeric = 0
 dim SkontoNettobetrag as numeric = 0
 dim SkontoSteuerbetrag as numeric = 0
-'FÃ¼r NBL
+'Für NBL
 dim wertSkontoSumN as numeric = 0
 
 dim isum as numeric = 0
@@ -2671,7 +2671,7 @@ if bSkontoAufgeschluesselt = true AND (bMitZahlungsbedingungen = true) AND (GetN
 					strProz = FormatNumeric("%.2f",wertProz)
 					strProzGet = FormatNumeric("%.2f",wertProz2)
 
-				  'fÃ¼r die Aufsummierung des Gesamt - Skontobetrages 
+				  'für die Aufsummierung des Gesamt - Skontobetrages 
 					isum =0
 					nBrutTeilsum = 58
 					sumSkonto = 0
@@ -2699,7 +2699,7 @@ if bSkontoAufgeschluesselt = true AND (bMitZahlungsbedingungen = true) AND (GetN
 						nBrutTeilsum = nBrutTeilsum+1
 						isum = isum+1
 					end while
-					'//Ende fÃ¼r die Aufsummierung des Gesamt - Skontobetrages 
+					'//Ende für die Aufsummierung des Gesamt - Skontobetrages 
 					sumSkontoBetrag = sumSkontoPos + sumSkontoPosN
 					sumSkontoBetrag2 = sumSkontoPos2 + sumSkontoPosN2
 
@@ -2765,8 +2765,8 @@ if bSkontoAufgeschluesselt = true AND (bMitZahlungsbedingungen = true) AND (GetN
 							nUstsatz = nUstsatz + 1
 						End While
 					
-					'Hier beginnt die Zeile fÃ¼r den 2. Skontosatz
-					if bSkonto2 = true then '2. Steuersatz BetrÃ¤ge
+					'Hier beginnt die Zeile für den 2. Skontosatz
+					if bSkonto2 = true then '2. Steuersatz Beträge
 							LF
 							TL("Der zweite Skontobetrag (Skontosatz: " + strProzGet + "%, " + HCS(FormatNumeric("%.2f", sumSkontoBetrag2)) + ") besteht aus:")
 							LF
@@ -2819,7 +2819,7 @@ if bSkontoAufgeschluesselt = true AND (bMitZahlungsbedingungen = true) AND (GetN
 								nUstsum  = nUstsum + 1 
 								nUstsatz = nUstsatz + 1
 							End While			
-					end if '2. Steuersatz BetrÃ¤ge
+					end if '2. Steuersatz Beträge
 			end if 'bSkonto = true
 		end if 'Nur bei Rechnung, Sammelrechnung und Abschlagsrechnung
 		
@@ -2849,7 +2849,7 @@ end if
 '---------------------Lieferadresse ausgeben ----------------------
 	if bSchlusstextmitLieferadresse then 
 		if is(AUFTR_IST_STORNO) = false then
-			LF  'leere Zeile zur Auftragsart nicht verÃ¤ndern
+			LF  'leere Zeile zur Auftragsart nicht verändern
 			if is(AUFTR_IST_LS) then
 				RechnungsadresseAusgeben("de", bSchlusstextmitLieferadresseAusStamm, true )
 			else	
@@ -2904,7 +2904,7 @@ end if
 		LF
 	end if
 
-		'Auftragsfreifelder aus AuftrÃ¤gen
+		'Auftragsfreifelder aus Aufträgen
 		If (IS(MIT_AFREIFELD1)) AND  (GetNumeric(LAY_COMBO_FF1) = 2) AND (Get(AUFTR_FREIFELD1 ) <> "") then
 			If Get(TEXT_AFREIFELD1 )<> ""  then
 				TL(Get(TEXT_AFREIFELD1 ) + ": " + Get(AUFTR_FREIFELD1))
@@ -2948,7 +2948,7 @@ end if
 			end if
 		end if
 		if Get(KD_NR) <> "" then
-			'Freifelder aus Kundendaten nur bei VerkaufsauftrÃ¤gen verfÃ¼gbar...
+			'Freifelder aus Kundendaten nur bei Verkaufsaufträgen verfügbar...
 				If IS(MIT_KFREIFELD1) AND (GetNumeric(LAY_COMBO_FF4) = 2) AND (Get(KD_FREIES_FELD1 ) <> "") then
 					If Get(KD_FREIFELD1_TITEL )<> "" then
 						TL(Get(KD_FREIFELD1_TITEL ) + ": " + Get(KD_FREIES_FELD1))
@@ -2992,7 +2992,7 @@ end if
 					end if
 				end if
 		else
-			'Freifelder Lieferantendaten nur bei EinkaufsauftrÃ¤gen verfÃ¼gbar...
+			'Freifelder Lieferantendaten nur bei Einkaufsaufträgen verfügbar...
 '///////////////////////////
 			If Get(AUFTR_KDNR_BEI_LIEF) <> "" then
 					If IS(MIT_LFREIFELD1) AND (GetNumeric(LAY_COMBO_FF7) = 2) AND (Get(LF_FREIES_FELD1 ) <> "") then
@@ -3073,7 +3073,7 @@ end if
 	end if
 
 
-	'Kassentext bei bezahlter Rechnung Ã¼ber Kasse
+	'Kassentext bei bezahlter Rechnung über Kasse
 	if IS(MITINFOBEZAHLT) AND (IS(AUFT_BEZMITKASSE) OR IS(AUFTR_BARBELEG)) then
 		Result_q = FirstRecord("q")
 		while Result_q do
@@ -3107,7 +3107,7 @@ function OnUpdate(bLastTableCell as bool)
 	SetCellStandard(C_HU_Spalte_2, SchriftArtStandard, CELL_TEXT_RIGHT, -1)
 
 	SetCellText(C_S_Spalte_2, strText)		'Setzen der Zwischensumme
-	SetCellText(C_HU_Spalte_2, strText)		'Setzen des Ãœbertrages
+	SetCellText(C_HU_Spalte_2, strText)		'Setzen des Übertrages
 end function
 
 '////////////////////////////////////////////////////////////////////////////////////
@@ -3141,16 +3141,16 @@ Function BaueTabelleNetto()
 		SetPos( nTabelleLinksAufSeite1-nRandLinks, nTabelleOben )
 	end if
 
-	'Definition der Ãœberschriftenzeile
+	'Definition der Überschriftenzeile
 	C_H_Head = CreateCell(0, 0, CELL_TYPE_DYNHORZ + CELL_TYPE_DYNVERT + CELL_TYPE_VERT)
 	C_H_Zeile = GetFormatCell(0, 0, C_H_Head, C_C_H_ZEILE)
-	' Ausgabe der Steuern, nur wenn ausgewÃ¤hlt
+	' Ausgabe der Steuern, nur wenn ausgewählt
 	IF IS(LAY_TAB_MIT_STEUER) then
 		C_HU_Zeile = GetFormatCell(0, 0, C_H_Head, C_C_H_ZEILE)
 	end if
 	SetCellBorder(C_H_Head, CELL_BORDER_ALL, 0, PEN_NULL, COLOR_TRANSPARENT)
 
-	'Definition der Zeilen im TabellenkÃ¶rper
+	'Definition der Zeilen im Tabellenkörper
 	C_Zeile = CreateCell(0, 0, CELL_TYPE_DYNHORZ + CELL_TYPE_DYNVERT + CELL_TYPE_HORZ + CELL_TYPE_BREAK)
 	SetEventHandlerEx(EVENT_UPDATE, OnUpdate, C_Zeile)
 	C_Zeile_s = CreateCell(0, 0, CELL_TYPE_DYNHORZ + CELL_TYPE_DYNVERT + CELL_TYPE_HORZ)
@@ -3166,7 +3166,7 @@ Function BaueTabelleNetto()
 
 if bMengenSpalteVorEPAuftrag = true then
 	
-	'Aussehen der Spalten im Tabellenkopf und -kÃ¶rper, wenn sich nicht um einen Lieferschein handelt
+	'Aussehen der Spalten im Tabellenkopf und -körper, wenn sich nicht um einen Lieferschein handelt
 	C_H_Spalte_1 = GetFormatCell(nBreiteSpalte_1,	0, C_H_Zeile, C_C_H_SPALTE)	' "Pos"
 	C_H_Spalte_3 = GetFormatCell(nBreiteSpalte_3, 	0, C_H_Zeile, C_C_H_SPALTE)	' "Art.Nr."
 	C_H_Spalte_8 = GetFormatCell(nBreiteSpalte_8, 	0, C_H_Zeile, C_C_H_SPALTE)	' "Gewicht"
@@ -3188,20 +3188,20 @@ if bMengenSpalteVorEPAuftrag = true then
 	C_Spalte_7a = GetFormatCell(nBreiteSpalte_6a, 0, C_Zeile, C_C_SPALTE)	' "USt."
 	C_Spalte_8 = GetFormatCell(nBreiteSpalte_7	, 0, C_Zeile, C_C_SPALTE)	' "Gesamtpreis"
 
-	'StÃ¼cklistenartikel
-	C_Spalte_1s = GetFormatCell(nBreiteSpalte_1	, 0, C_Zeile_s, C_C_SPALTE)	' "PosStÃ¼cklistenart."
-	C_Spalte_4s = GetFormatCell(nBreiteSpalte_3	, 0, C_Zeile_s, C_C_SPALTE)	' "Art.NrStÃ¼cklistenart."
-	C_Spalte_9s = GetFormatCell(nBreiteSpalte_8	, 0, C_Zeile_s, C_C_SPALTE)	' "GewichtStÃ¼cklistenart."
-	C_Spalte_5s = GetFormatCell(nBreiteSpalte_4	, 0, C_Zeile_s, C_C_SPALTE)	' "TextStÃ¼cklistenart."
-	C_Spalte_2s = GetFormatCell(nBreiteSpalte_2/2, 0, C_Zeile_s, C_C_SPALTE)	' "Menge StkStÃ¼cklistenart."
-	C_Spalte_3s = GetFormatCell(nBreiteSpalte_2/2, 0, C_Zeile_s, C_C_SPALTE)	' "Menge EinheitStÃ¼cklistenart."
-	C_Spalte_6s = GetFormatCell(nBreiteSpalte_5	, 0, C_Zeile_s, C_C_SPALTE)	' "EinzelpreisStÃ¼cklistenart."
-	C_Spalte_7s = GetFormatCell(nBreiteSpalte_6	, 0, C_Zeile_s, C_C_SPALTE)	' "RabattStÃ¼cklistenart."
+	'Stücklistenartikel
+	C_Spalte_1s = GetFormatCell(nBreiteSpalte_1	, 0, C_Zeile_s, C_C_SPALTE)	' "PosStücklistenart."
+	C_Spalte_4s = GetFormatCell(nBreiteSpalte_3	, 0, C_Zeile_s, C_C_SPALTE)	' "Art.NrStücklistenart."
+	C_Spalte_9s = GetFormatCell(nBreiteSpalte_8	, 0, C_Zeile_s, C_C_SPALTE)	' "GewichtStücklistenart."
+	C_Spalte_5s = GetFormatCell(nBreiteSpalte_4	, 0, C_Zeile_s, C_C_SPALTE)	' "TextStücklistenart."
+	C_Spalte_2s = GetFormatCell(nBreiteSpalte_2/2, 0, C_Zeile_s, C_C_SPALTE)	' "Menge StkStücklistenart."
+	C_Spalte_3s = GetFormatCell(nBreiteSpalte_2/2, 0, C_Zeile_s, C_C_SPALTE)	' "Menge EinheitStücklistenart."
+	C_Spalte_6s = GetFormatCell(nBreiteSpalte_5	, 0, C_Zeile_s, C_C_SPALTE)	' "EinzelpreisStücklistenart."
+	C_Spalte_7s = GetFormatCell(nBreiteSpalte_6	, 0, C_Zeile_s, C_C_SPALTE)	' "RabattStücklistenart."
 	C_Spalte_7sa = GetFormatCell(nBreiteSpalte_6a, 0, C_Zeile_s, C_C_SPALTE)	' "USt."
-	C_Spalte_8s = GetFormatCell(nBreiteSpalte_7	, 0, C_Zeile_s, C_C_SPALTE)	' "GesamtpreisStÃ¼cklistenart."
+	C_Spalte_8s = GetFormatCell(nBreiteSpalte_7	, 0, C_Zeile_s, C_C_SPALTE)	' "GesamtpreisStücklistenart."
 
 else
-	'Aussehen der Spalten im Tabellenkopf und -kÃ¶rper, wenn sich nicht um einen Lieferschein handelt
+	'Aussehen der Spalten im Tabellenkopf und -körper, wenn sich nicht um einen Lieferschein handelt
 	C_H_Spalte_1 = GetFormatCell(nBreiteSpalte_1,	0, C_H_Zeile, C_C_H_SPALTE)	' "Pos"
 	C_H_Spalte_2 = GetFormatCell(nBreiteSpalte_2,	0, C_H_Zeile, C_C_H_SPALTE)	' "Menge"
 	C_H_Spalte_3 = GetFormatCell(nBreiteSpalte_3, 	0, C_H_Zeile, C_C_H_SPALTE)	' "Art.Nr."
@@ -3223,24 +3223,24 @@ else
 	C_Spalte_7a = GetFormatCell(nBreiteSpalte_6a, 0, C_Zeile, C_C_SPALTE)	' "USt."
 	C_Spalte_8 = GetFormatCell(nBreiteSpalte_7	, 0, C_Zeile, C_C_SPALTE)	' "Gesamtpreis"
 
-	'StÃ¼cklistenartikel
-	C_Spalte_1s = GetFormatCell(nBreiteSpalte_1	, 0, C_Zeile_s, C_C_SPALTE)	' "PosStÃ¼cklistenart."
-	C_Spalte_2s = GetFormatCell(nBreiteSpalte_2/2, 0, C_Zeile_s, C_C_SPALTE)	' "Menge StkStÃ¼cklistenart."
-	C_Spalte_3s = GetFormatCell(nBreiteSpalte_2/2, 0, C_Zeile_s, C_C_SPALTE)	' "Menge EinheitStÃ¼cklistenart."
-	C_Spalte_4s = GetFormatCell(nBreiteSpalte_3	, 0, C_Zeile_s, C_C_SPALTE)	' "Art.NrStÃ¼cklistenart."
-	C_Spalte_9s = GetFormatCell(nBreiteSpalte_8	, 0, C_Zeile_s, C_C_SPALTE)	' "GewichtStÃ¼cklistenart."
-	C_Spalte_5s = GetFormatCell(nBreiteSpalte_4	, 0, C_Zeile_s, C_C_SPALTE)	' "TextStÃ¼cklistenart."
-	C_Spalte_6s = GetFormatCell(nBreiteSpalte_5	, 0, C_Zeile_s, C_C_SPALTE)	' "EinzelpreisStÃ¼cklistenart."
-	C_Spalte_7s = GetFormatCell(nBreiteSpalte_6	, 0, C_Zeile_s, C_C_SPALTE)	' "RabattStÃ¼cklistenart."
+	'Stücklistenartikel
+	C_Spalte_1s = GetFormatCell(nBreiteSpalte_1	, 0, C_Zeile_s, C_C_SPALTE)	' "PosStücklistenart."
+	C_Spalte_2s = GetFormatCell(nBreiteSpalte_2/2, 0, C_Zeile_s, C_C_SPALTE)	' "Menge StkStücklistenart."
+	C_Spalte_3s = GetFormatCell(nBreiteSpalte_2/2, 0, C_Zeile_s, C_C_SPALTE)	' "Menge EinheitStücklistenart."
+	C_Spalte_4s = GetFormatCell(nBreiteSpalte_3	, 0, C_Zeile_s, C_C_SPALTE)	' "Art.NrStücklistenart."
+	C_Spalte_9s = GetFormatCell(nBreiteSpalte_8	, 0, C_Zeile_s, C_C_SPALTE)	' "GewichtStücklistenart."
+	C_Spalte_5s = GetFormatCell(nBreiteSpalte_4	, 0, C_Zeile_s, C_C_SPALTE)	' "TextStücklistenart."
+	C_Spalte_6s = GetFormatCell(nBreiteSpalte_5	, 0, C_Zeile_s, C_C_SPALTE)	' "EinzelpreisStücklistenart."
+	C_Spalte_7s = GetFormatCell(nBreiteSpalte_6	, 0, C_Zeile_s, C_C_SPALTE)	' "RabattStücklistenart."
 	C_Spalte_7sa = GetFormatCell(nBreiteSpalte_6a, 0, C_Zeile_s, C_C_SPALTE)	' "USt."
-	C_Spalte_8s = GetFormatCell(nBreiteSpalte_7	, 0, C_Zeile_s, C_C_SPALTE)	' "GesamtpreisStÃ¼cklistenart."
+	C_Spalte_8s = GetFormatCell(nBreiteSpalte_7	, 0, C_Zeile_s, C_C_SPALTE)	' "GesamtpreisStücklistenart."
 
 end if
 
 	SetCellStandard(C_Spalte_2s, SchriftArtStandard, CELL_TEXT_RIGHT, -1)
 	SetCellStandard(C_Spalte_3s, SchriftArtStandard, CELL_TEXT_RIGHT, -1)
 
-	'Die Zellen der Ãœbertragzeile
+	'Die Zellen der Übertragzeile
 	nBreite = nBreiteSpalte_1 + nBreiteSpalte_2 + nBreiteSpalte_3 + nBreiteSpalte_4 + nBreiteSpalte_5 + nBreiteSpalte_6 + nBreiteSpalte_6a
 	C_HU_Spalte_1 = GetFormatCell(nBreite, 0, C_HU_Zeile, C_C_S_SPALTE)
 	C_HU_Spalte_2 = GetFormatCell(nBreiteSpalte_7, 0, C_HU_Zeile, C_C_S_SPALTE)
@@ -3258,21 +3258,21 @@ end if
 	SetCellStandard(C_H_Spalte_7, SchriftArtSpaltenKopf, CELL_TEXT_CENTER, -1)
 	SetCellStandard(C_H_Spalte_8, SchriftArtSpaltenKopf, CELL_TEXT_CENTER, -1)
 
-	'Ausrichtung des Textes im TabellenkÃ¶rper
+	'Ausrichtung des Textes im Tabellenkörper
 	SetRowStandard(C_Zeile, SchriftArtStandard, CELL_TEXT_RIGHT, -1)			'Die ganze Zeile
 	SetCellStandard(C_Spalte_1, SchriftArtStandard, CELL_TEXT_LEFT, -1)
 	SetCellStandard(C_Spalte_3, SchriftArtStandard, CELL_TEXT_LEFT, -1)
 	SetCellStandard(C_Spalte_4, SchriftArtStandard, CELL_TEXT_LEFT, -1)
 	SetCellStandard(C_Spalte_5, SchriftArtStandard, CELL_TEXT_LEFT, -1)
 	SetCellStandard(C_Spalte_9, SchriftArtStandard, CELL_TEXT_RIGHT, -1)
-	SetCellAlign(C_Spalte_5, CELL_TEXT_RIGHT + CELL_TYPE_CLIP )					'keinen Umbruch fÃ¼r Einzelpreis
-	SetCellAlign(C_Spalte_7, CELL_TEXT_RIGHT + CELL_TYPE_CLIP )					'keinen Umbruch fÃ¼r Gesamtpreis
+	SetCellAlign(C_Spalte_5, CELL_TEXT_RIGHT + CELL_TYPE_CLIP )					'keinen Umbruch für Einzelpreis
+	SetCellAlign(C_Spalte_7, CELL_TEXT_RIGHT + CELL_TYPE_CLIP )					'keinen Umbruch für Gesamtpreis
 
 	'Ausrichtung des Textes aller Zellen in einer Tabellenzeile Hier Rechts, Festlegen der Schriftart
 	SetCellStandard(C_S_Spalte_2, SchriftArtStandard, CELL_TEXT_RIGHT, -1)
 	SetCellStandard(C_S_Spalte_3, SchriftArtStandard, CELL_TEXT_RIGHT, -1)
 
-	'Zellen der Ãœbertragszeile auf den Seiten 2 -...
+	'Zellen der Übertragszeile auf den Seiten 2 -...
 	SetCellStandard(C_HU_Spalte_1, SchriftArtStandard, CELL_TEXT_LEFT, -1)
 	SetCellStandard(C_HU_Spalte_2, SchriftArtStandard, CELL_TEXT_RIGHT, -1)
 
@@ -3285,7 +3285,7 @@ end if
 	HandleLayout(C_S_Top, False, nSchraffurFarbeKopf, SchriftArtSpaltenKopf, PEN_NULL, VertLinienArt, nRand)
 	SetCellBorder(C_S_Top, CELL_BORDER_BOTTOM, 0, HorzLinienArt, COLOR_BLACK)
 
-	'Das Aussehen der Ãœberschriftenzeile
+	'Das Aussehen der Überschriftenzeile
 	if bTabelleMitKopf = JA then
 		if nSchraffurFarbeKopf = 16777215.0000 then
 			HandleLayout(C_H_Head, false, COLOR_TRANSPARENT, SchriftArtSpaltenKopf,  HorzLinienArt, VertLinienArt, nRand)
@@ -3296,24 +3296,24 @@ end if
 			HandleLayout(C_H_Zeile, bMitSchraffur, nSchraffurFarbeKopf, SchriftArtSpaltenKopf,  HorzLinienArt, VertLinienArt, nRand)
 		end if
 	end if
-	' Aussehen Ãœbertragszeile
+	' Aussehen Übertragszeile
 	HandleLayout(C_HU_Zeile, bMitSchraffur, nSchraffurFarbeKopf, SchriftArtSpaltenKopf,  HorzLinienArt, VertLinienArt, nRand)
 
 	'Diese Zeile ist die Summenzeile bei Seitenumbruch in den Nebenleistungen
 	HandleLayout(C_S_Noetig, bMitSchraffur, nSchraffurFarbeKopf, SchriftArtSpaltenKopf,  HorzLinienArt, VertLinienArt, nRand)
 
-	'Aussehen der Zeilen im TabellenkÃ¶rper
+	'Aussehen der Zeilen im Tabellenkörper
 	bMitSchraffur = True
 	HandleLayout(C_Zeile, bMitSchraffur, nSchraffurFarbe, SchriftArtStandard, PEN_NULL, VertLinienArt, nRand)
 	HandleLayout(C_Zeile_s, bMitSchraffur, nSchraffurFarbe, SchriftArtStandard, PEN_NULL, VertLinienArt, nRand)
 	bMitSchraffur = False
-	'fÃ¼r StÃ¼cklistenartikel
+	'für Stücklistenartikel
 
 	'Aussehen der Summenzeile
 	HandleLayout(C_S_Zeile, bMitSchraffur, nSchraffurFarbe, SchriftArtStandard, HorzLinienArt, VertLinienArt, nRand)
 	SetCellBorder(C_S_Noetig, CELL_BORDER_TOP + CELL_BORDER_BOTTOM, 0, HorzLinienArt, COLOR_BLACK)
 
-	'Setzen des Textinhaltes der Ãœberschriftenzeile
+	'Setzen des Textinhaltes der Überschriftenzeile
 	if bTabelleMitKopf = NEIN then
 		SetCellText(C_H_Spalte_1, "" )
 		SetCellText(C_H_Spalte_2, "" )
@@ -3339,10 +3339,10 @@ end if
 	SetCellStandard(C_HU_Spalte_1, SchriftArtStandard, CELL_TEXT_LEFT, -1)
 	SetCellText(C_S_Spalte_1, "Zwischensumme")
 	SetCellText(C_S_Spalte_2, "")
-	SetCellText(C_HU_Spalte_1, "Ãœbertrag")
+	SetCellText(C_HU_Spalte_1, "Übertrag")
 	SetCellText(C_HU_Spalte_2, "")
 
-	'Zellen der NÃ¶tigen Zwischensumme wenn Nebenleistungen
+	'Zellen der Nötigen Zwischensumme wenn Nebenleistungen
 	C_S_Not_Spalte_1 = DuplicateCell(C_S_Spalte_1)
 	C_S_Not_Spalte_2 = DuplicateCell(C_S_Spalte_2)
 	SetCellParent(C_S_Not_Spalte_1, C_S_Noetig)
@@ -3381,16 +3381,16 @@ Function BaueTabelleBrutto()
 		SetPos( nTabelleLinksAufSeite1-nRandLinks, nTabelleOben )
 	end if
 
-	'Definition der Ãœberschriftenzeile
+	'Definition der Überschriftenzeile
 	C_H_Head = CreateCell(0, 0, CELL_TYPE_DYNHORZ + CELL_TYPE_DYNVERT + CELL_TYPE_VERT)
 	C_H_Zeile = GetFormatCell(0, 0, C_H_Head, C_C_H_ZEILE)
-	' Ausgabe der Steuern, nur wenn ausgewÃ¤hlt
+	' Ausgabe der Steuern, nur wenn ausgewählt
 	IF IS(LAY_TAB_MIT_STEUER) then
 		C_HU_Zeile = GetFormatCell(0, 0, C_H_Head, C_C_H_ZEILE)
 	end if
 	SetCellBorder(C_H_Head, CELL_BORDER_ALL, 0, PEN_NULL, COLOR_TRANSPARENT)
 
-	'Definition der Zeilen im TabellenkÃ¶rper
+	'Definition der Zeilen im Tabellenkörper
 	C_Zeile = CreateCell(0, 0, CELL_TYPE_DYNHORZ + CELL_TYPE_DYNVERT + CELL_TYPE_HORZ + CELL_TYPE_BREAK)
 	SetEventHandlerEx(EVENT_UPDATE, OnUpdate, C_Zeile)
 	C_Zeile_s = CreateCell(0, 0, CELL_TYPE_DYNHORZ + CELL_TYPE_DYNVERT + CELL_TYPE_HORZ)
@@ -3406,7 +3406,7 @@ Function BaueTabelleBrutto()
 
 if bMengenSpalteVorEPAuftrag = true then
 
-	'Aussehen der Spalten im Tabellenkopf und -kÃ¶rper, wenn sich nicht um einen Lieferschein handelt
+	'Aussehen der Spalten im Tabellenkopf und -körper, wenn sich nicht um einen Lieferschein handelt
 	C_H_Spalte_1 = GetFormatCell(nBreiteSpalte_1,	0, C_H_Zeile, C_C_H_SPALTE)	' "Pos"
 	C_H_Spalte_3 = GetFormatCell(nBreiteSpalte_3, 	0, C_H_Zeile, C_C_H_SPALTE)	' "Art.Nr."
 	C_H_Spalte_4 = GetFormatCell(nBreiteSpalte_4,	0, C_H_Zeile, C_C_H_SPALTE)	' "Text"
@@ -3426,19 +3426,19 @@ if bMengenSpalteVorEPAuftrag = true then
 	C_Spalte_7a = GetFormatCell(nBreiteSpalte_6a	, 0, C_Zeile, C_C_SPALTE)	' "USt."
 	C_Spalte_8 = GetFormatCell(nBreiteSpalte_7	, 0, C_Zeile, C_C_SPALTE)	' "Gesamtpreis"
 
-	C_Spalte_1s = GetFormatCell(nBreiteSpalte_1	, 0, C_Zeile_s, C_C_SPALTE)	' "PosStÃ¼cklistenart."
-	C_Spalte_4s = GetFormatCell(nBreiteSpalte_3	, 0, C_Zeile_s, C_C_SPALTE)	' "Art.NrStÃ¼cklistenart."
-	C_Spalte_9s = GetFormatCell(nBreiteSpalte_8	, 0, C_Zeile_s, C_C_SPALTE)	' "GewichtStÃ¼cklistenart."
-	C_Spalte_5s = GetFormatCell(nBreiteSpalte_4	, 0, C_Zeile_s, C_C_SPALTE)	' "TextStÃ¼cklistenart."
-	C_Spalte_2s = GetFormatCell(nBreiteSpalte_2/2, 0, C_Zeile_s, C_C_SPALTE)' "Menge StkStÃ¼cklistenart."
-	C_Spalte_3s = GetFormatCell(nBreiteSpalte_2/2, 0, C_Zeile_s, C_C_SPALTE)' "Menge EinheitStÃ¼cklistenart."
-	C_Spalte_6s = GetFormatCell(nBreiteSpalte_5	, 0, C_Zeile_s, C_C_SPALTE)	' "EinzelpreisStÃ¼cklistenart."
-	C_Spalte_7s = GetFormatCell(nBreiteSpalte_6	, 0, C_Zeile_s, C_C_SPALTE)	' "RabattStÃ¼cklistenart."
-	C_Spalte_7sa = GetFormatCell(nBreiteSpalte_6a	, 0, C_Zeile_s, C_C_SPALTE)	' "USt.StÃ¼cklistenart."
-	C_Spalte_8s = GetFormatCell(nBreiteSpalte_7	, 0, C_Zeile_s, C_C_SPALTE)	' "GesamtpreisStÃ¼cklistenart."
+	C_Spalte_1s = GetFormatCell(nBreiteSpalte_1	, 0, C_Zeile_s, C_C_SPALTE)	' "PosStücklistenart."
+	C_Spalte_4s = GetFormatCell(nBreiteSpalte_3	, 0, C_Zeile_s, C_C_SPALTE)	' "Art.NrStücklistenart."
+	C_Spalte_9s = GetFormatCell(nBreiteSpalte_8	, 0, C_Zeile_s, C_C_SPALTE)	' "GewichtStücklistenart."
+	C_Spalte_5s = GetFormatCell(nBreiteSpalte_4	, 0, C_Zeile_s, C_C_SPALTE)	' "TextStücklistenart."
+	C_Spalte_2s = GetFormatCell(nBreiteSpalte_2/2, 0, C_Zeile_s, C_C_SPALTE)' "Menge StkStücklistenart."
+	C_Spalte_3s = GetFormatCell(nBreiteSpalte_2/2, 0, C_Zeile_s, C_C_SPALTE)' "Menge EinheitStücklistenart."
+	C_Spalte_6s = GetFormatCell(nBreiteSpalte_5	, 0, C_Zeile_s, C_C_SPALTE)	' "EinzelpreisStücklistenart."
+	C_Spalte_7s = GetFormatCell(nBreiteSpalte_6	, 0, C_Zeile_s, C_C_SPALTE)	' "RabattStücklistenart."
+	C_Spalte_7sa = GetFormatCell(nBreiteSpalte_6a	, 0, C_Zeile_s, C_C_SPALTE)	' "USt.Stücklistenart."
+	C_Spalte_8s = GetFormatCell(nBreiteSpalte_7	, 0, C_Zeile_s, C_C_SPALTE)	' "GesamtpreisStücklistenart."
 else
 
-	'Aussehen der Spalten im Tabellenkopf und -kÃ¶rper, wenn sich nicht um einen Lieferschein handelt
+	'Aussehen der Spalten im Tabellenkopf und -körper, wenn sich nicht um einen Lieferschein handelt
 	C_H_Spalte_1 = GetFormatCell(nBreiteSpalte_1,	0, C_H_Zeile, C_C_H_SPALTE)	' "Pos"
 	C_H_Spalte_2 = GetFormatCell(nBreiteSpalte_2,	0, C_H_Zeile, C_C_H_SPALTE)	' "Menge"
 	C_H_Spalte_3 = GetFormatCell(nBreiteSpalte_3, 	0, C_H_Zeile, C_C_H_SPALTE)	' "Art.Nr."
@@ -3458,23 +3458,23 @@ else
 	C_Spalte_7a = GetFormatCell(nBreiteSpalte_6a	, 0, C_Zeile, C_C_SPALTE)	' "USt."
 	C_Spalte_8 = GetFormatCell(nBreiteSpalte_7	, 0, C_Zeile, C_C_SPALTE)	' "Gesamtpreis"
 
-	C_Spalte_1s = GetFormatCell(nBreiteSpalte_1	, 0, C_Zeile_s, C_C_SPALTE)	' "PosStÃ¼cklistenart."
-	C_Spalte_2s = GetFormatCell(nBreiteSpalte_2/2, 0, C_Zeile_s, C_C_SPALTE)	' "Menge StkStÃ¼cklistenart."
-	C_Spalte_3s = GetFormatCell(nBreiteSpalte_2/2, 0, C_Zeile_s, C_C_SPALTE)	' "Menge EinheitStÃ¼cklistenart."
-	C_Spalte_4s = GetFormatCell(nBreiteSpalte_3	, 0, C_Zeile_s, C_C_SPALTE)	' "Art.NrStÃ¼cklistenart."
-	C_Spalte_9s = GetFormatCell(nBreiteSpalte_8	, 0, C_Zeile_s, C_C_SPALTE)	' "GewichtStÃ¼cklistenart."
-	C_Spalte_5s = GetFormatCell(nBreiteSpalte_4	, 0, C_Zeile_s, C_C_SPALTE)	' "TextStÃ¼cklistenart."
-	C_Spalte_6s = GetFormatCell(nBreiteSpalte_5	, 0, C_Zeile_s, C_C_SPALTE)	' "EinzelpreisStÃ¼cklistenart."
-	C_Spalte_7s = GetFormatCell(nBreiteSpalte_6	, 0, C_Zeile_s, C_C_SPALTE)	' "RabattStÃ¼cklistenart."
-	C_Spalte_7sa = GetFormatCell(nBreiteSpalte_6a	, 0, C_Zeile_s, C_C_SPALTE)	' "USt.StÃ¼cklistenart."
-	C_Spalte_8s = GetFormatCell(nBreiteSpalte_7	, 0, C_Zeile_s, C_C_SPALTE)	' "GesamtpreisStÃ¼cklistenart."
+	C_Spalte_1s = GetFormatCell(nBreiteSpalte_1	, 0, C_Zeile_s, C_C_SPALTE)	' "PosStücklistenart."
+	C_Spalte_2s = GetFormatCell(nBreiteSpalte_2/2, 0, C_Zeile_s, C_C_SPALTE)	' "Menge StkStücklistenart."
+	C_Spalte_3s = GetFormatCell(nBreiteSpalte_2/2, 0, C_Zeile_s, C_C_SPALTE)	' "Menge EinheitStücklistenart."
+	C_Spalte_4s = GetFormatCell(nBreiteSpalte_3	, 0, C_Zeile_s, C_C_SPALTE)	' "Art.NrStücklistenart."
+	C_Spalte_9s = GetFormatCell(nBreiteSpalte_8	, 0, C_Zeile_s, C_C_SPALTE)	' "GewichtStücklistenart."
+	C_Spalte_5s = GetFormatCell(nBreiteSpalte_4	, 0, C_Zeile_s, C_C_SPALTE)	' "TextStücklistenart."
+	C_Spalte_6s = GetFormatCell(nBreiteSpalte_5	, 0, C_Zeile_s, C_C_SPALTE)	' "EinzelpreisStücklistenart."
+	C_Spalte_7s = GetFormatCell(nBreiteSpalte_6	, 0, C_Zeile_s, C_C_SPALTE)	' "RabattStücklistenart."
+	C_Spalte_7sa = GetFormatCell(nBreiteSpalte_6a	, 0, C_Zeile_s, C_C_SPALTE)	' "USt.Stücklistenart."
+	C_Spalte_8s = GetFormatCell(nBreiteSpalte_7	, 0, C_Zeile_s, C_C_SPALTE)	' "GesamtpreisStücklistenart."
 
 end if
 
 	SetCellStandard(C_Spalte_2s, SchriftArtStandard, CELL_TEXT_RIGHT, -1)
 	SetCellStandard(C_Spalte_3s, SchriftArtStandard, CELL_TEXT_RIGHT, -1)
 
-	'Die Zellen der Ãœbertragzeile
+	'Die Zellen der Übertragzeile
 	nBreite = nBreiteSpalte_1 + nBreiteSpalte_2 + nBreiteSpalte_3 + nBreiteSpalte_4 + nBreiteSpalte_5 + nBreiteSpalte_6 + nBreitespalte_6a
 	C_HU_Spalte_1 = GetFormatCell(nBreite, 0, C_HU_Zeile, C_C_S_SPALTE)
 	C_HU_Spalte_2 = GetFormatCell(nBreiteSpalte_7, 0, C_HU_Zeile, C_C_S_SPALTE)
@@ -3490,21 +3490,21 @@ end if
 	SetCellStandard(C_H_Spalte_6a, SchriftArtSpaltenKopf, CELL_TEXT_CENTER, -1)
 	SetCellStandard(C_H_Spalte_7, SchriftArtSpaltenKopf, CELL_TEXT_CENTER, -1)
 
-	'Ausrichtung des Textes im TabellenkÃ¶rper
+	'Ausrichtung des Textes im Tabellenkörper
 	SetRowStandard(C_Zeile, SchriftArtStandard, CELL_TEXT_RIGHT, -1)			'Die ganze Zeile
 	SetCellStandard(C_Spalte_1, SchriftArtStandard, CELL_TEXT_LEFT, -1)
 	SetCellStandard(C_Spalte_3, SchriftArtStandard, CELL_TEXT_LEFT, -1)
 	SetCellStandard(C_Spalte_4, SchriftArtStandard, CELL_TEXT_LEFT, -1)
 	SetCellStandard(C_Spalte_5, SchriftArtStandard, CELL_TEXT_LEFT, -1)
-	SetCellAlign(C_Spalte_5, CELL_TEXT_RIGHT + CELL_TYPE_CLIP )					'keinen Umbruch fÃ¼r Einzelpreis
-	SetCellAlign(C_Spalte_7, CELL_TEXT_RIGHT + CELL_TYPE_CLIP )					'keinen Umbruch fÃ¼r Gesamtpreis
+	SetCellAlign(C_Spalte_5, CELL_TEXT_RIGHT + CELL_TYPE_CLIP )					'keinen Umbruch für Einzelpreis
+	SetCellAlign(C_Spalte_7, CELL_TEXT_RIGHT + CELL_TYPE_CLIP )					'keinen Umbruch für Gesamtpreis
 	SetCellAlign(C_Spalte_2s, CELL_TEXT_RIGHT)
 
 	'Ausrichtung des Textes aller Zellen in einer Tabellenzeile Hier Rechts, Festlegen der Schriftart
 	SetCellStandard(C_S_Spalte_2, SchriftArtStandard, CELL_TEXT_RIGHT, -1)
 	SetCellStandard(C_S_Spalte_3, SchriftArtStandard, CELL_TEXT_RIGHT, -1)
 
-	'Zellen der Ãœbertragszeile auf den Seiten 2 -...
+	'Zellen der Übertragszeile auf den Seiten 2 -...
 	SetCellStandard(C_HU_Spalte_1, SchriftArtStandard, CELL_TEXT_LEFT, -1)
 	SetCellStandard(C_HU_Spalte_2, SchriftArtStandard, CELL_TEXT_RIGHT, -1)
 
@@ -3527,13 +3527,13 @@ end if
 			HandleLayout(C_H_Zeile, bMitSchraffur, nSchraffurFarbeKopf, SchriftArtSpaltenKopf,  HorzLinienArt, VertLinienArt, nRand)
 		end if
 	end if
-	' Aussehen Ãœbertragszeile
+	' Aussehen Übertragszeile
 	HandleLayout(C_HU_Zeile, bMitSchraffur, nSchraffurFarbeKopf, SchriftArtSpaltenKopf,  HorzLinienArt, VertLinienArt, nRand)
 
 	'Diese Zeile ist die Summenzeile bei Seitenumbruch in den Nebenleistungen
 	HandleLayout(C_S_Noetig, bMitSchraffur, nSchraffurFarbeKopf, SchriftArtSpaltenKopf,  HorzLinienArt, VertLinienArt, nRand)
 
-	'Aussehen der Zeilen im TabellenkÃ¶rper
+	'Aussehen der Zeilen im Tabellenkörper
 	bMitSchraffur = True
 	HandleLayout(C_Zeile, bMitSchraffur, nSchraffurFarbe, SchriftArtStandard, PEN_NULL, VertLinienArt, nRand)
 	HandleLayout(C_Zeile_s, bMitSchraffur, nSchraffurFarbe, SchriftArtStandard, PEN_NULL, VertLinienArt, nRand)
@@ -3543,7 +3543,7 @@ end if
 	HandleLayout(C_S_Zeile, bMitSchraffur, nSchraffurFarbe, SchriftArtStandard, HorzLinienArt, VertLinienArt, nRand)
 	SetCellBorder(C_S_Noetig, CELL_BORDER_TOP + CELL_BORDER_BOTTOM, 0, HorzLinienArt, COLOR_BLACK)
 	
-	'Setzen des Textinhaltes der Ãœberschriftenzeile
+	'Setzen des Textinhaltes der Überschriftenzeile
 	if bTabelleMitKopf = NEIN then
 		SetCellText(C_H_Spalte_1, "" )
 		SetCellText(C_H_Spalte_2, "" )
@@ -3567,10 +3567,10 @@ end if
 	SetCellStandard(C_HU_Spalte_1, SchriftArtStandard, CELL_TEXT_LEFT, -1)
 	SetCellText(C_S_Spalte_1, "Zwischensumme")
 	SetCellText(C_S_Spalte_2, "")
-	SetCellText(C_HU_Spalte_1, "Ãœbertrag")
+	SetCellText(C_HU_Spalte_1, "Übertrag")
 	SetCellText(C_HU_Spalte_2, "")
 
-	'Zellen der NÃ¶tigen Zwischensumme wenn Nebenleistungen
+	'Zellen der Nötigen Zwischensumme wenn Nebenleistungen
 	C_S_Not_Spalte_1 = DuplicateCell(C_S_Spalte_1)
 	C_S_Not_Spalte_2 = DuplicateCell(C_S_Spalte_2)
 	SetCellParent(C_S_Not_Spalte_1, C_S_Noetig)
@@ -3580,7 +3580,7 @@ End Function
 
 '////////////////////////////////////////////////////////////////////////////////////
 'Funktion - BaueTabelleLieferschein()
-'Erzeugen der Tabelle fÃ¼r den Lieferschein mit Spalten und Zeilen
+'Erzeugen der Tabelle für den Lieferschein mit Spalten und Zeilen
 '/////////////////////////////////////////////////////////////
 Function BaueTabelleLieferschein()
 	Dim strWaehrung as String = "\n"
@@ -3609,19 +3609,19 @@ Function BaueTabelleLieferschein()
 		SetPos( nTabelleLinksAufSeite1-nRandLinks, nTabelleOben )
 	end if
 
-	'Definition der Ãœberschriftenzeile
+	'Definition der Überschriftenzeile
 	C_H_Head = CreateCell(0, 0, CELL_TYPE_DYNHORZ + CELL_TYPE_DYNVERT + CELL_TYPE_VERT)
 	C_H_Zeile = GetFormatCell(0, 0, C_H_Head, C_C_H_ZEILE)
 	SetCellBorder(C_H_Head, CELL_BORDER_ALL, 0, PEN_NULL, COLOR_TRANSPARENT)
 
-	'Definition der Zeilen im TabellenkÃ¶rper
+	'Definition der Zeilen im Tabellenkörper
 	C_Zeile = CreateCell(0, 0, CELL_TYPE_DYNHORZ + CELL_TYPE_DYNVERT + CELL_TYPE_HORZ + CELL_TYPE_BREAK)
 	SetEventHandlerEx(EVENT_UPDATE, OnUpdate, C_Zeile)
-	C_Zeile_s = CreateCell(0, 0, CELL_TYPE_DYNHORZ + CELL_TYPE_DYNVERT + CELL_TYPE_HORZ) '(fÃ¼r StÃ¼cklistenpositionen)
+	C_Zeile_s = CreateCell(0, 0, CELL_TYPE_DYNHORZ + CELL_TYPE_DYNVERT + CELL_TYPE_HORZ) '(für Stücklistenpositionen)
 
 if bMengenSpalteVorEPLiefer = true then
 
-	'Aussehen der Spalten im Tabellenkopf und -kÃ¶rper, wenn es sich um einen Lieferschein handelt
+	'Aussehen der Spalten im Tabellenkopf und -körper, wenn es sich um einen Lieferschein handelt
 	C_H_Spalte_1 = GetFormatCell(nLieferBreiteSpalte_1 , 0, C_H_Zeile, C_C_H_SPALTE)	' Position
 	C_H_Spalte_3 = GetFormatCell(nLieferBreiteSpalte_3 , 0, C_H_Zeile, C_C_H_SPALTE)	' Art.-Nr.
 	C_H_Spalte_4 = GetFormatCell(nLieferBreiteSpalte_4 , 0, C_H_Zeile, C_C_H_SPALTE)	' kg
@@ -3638,7 +3638,7 @@ if bMengenSpalteVorEPLiefer = true then
 	C_Spalte_6 = GetFormatCell(nLieferBreiteSpalte_5	, 0, C_Zeile, C_C_SPALTE)	' Text
 	C_Spalte_2 = GetFormatCell(nLieferBreiteSpalte_2/2	, 0, C_Zeile, C_C_SPALTE)	' Menge - Anzahl
 	C_Spalte_3 = GetFormatCell(nLieferBreiteSpalte_2/2	, 0, C_Zeile, C_C_SPALTE)	' Menge - Einheit
-	' keine Umbruch fÃ¼r Einzel und Gesamtpreis, deshalb die Zellen hier von Hand erzeugen
+	' keine Umbruch für Einzel und Gesamtpreis, deshalb die Zellen hier von Hand erzeugen
 	C_Spalte_7 = CreateCell(nLieferBreiteSpalte_6, 0, CELL_TYPE_DYNVERT + CELL_TYPE_VERT )
 	SetCellParent(C_Spalte_7, C_Zeile)
 	SetCellBackground(C_Spalte_7, COLOR_TRANSPARENT)
@@ -3646,17 +3646,17 @@ if bMengenSpalteVorEPLiefer = true then
 	SetCellParent(C_Spalte_8, C_Zeile)
 	SetCellBackground(C_Spalte_8, COLOR_TRANSPARENT)
 
-	C_Spalte_1s = GetFormatCell(nLieferBreiteSpalte_1	, 0, C_Zeile_s, C_C_SPALTE)	' PositionStÃ¼cklistenartikel
-	C_Spalte_4s = GetFormatCell(nLieferBreiteSpalte_3	, 0, C_Zeile_s, C_C_SPALTE)	' Art.-Nr.StÃ¼cklistenartikel
+	C_Spalte_1s = GetFormatCell(nLieferBreiteSpalte_1	, 0, C_Zeile_s, C_C_SPALTE)	' PositionStücklistenartikel
+	C_Spalte_4s = GetFormatCell(nLieferBreiteSpalte_3	, 0, C_Zeile_s, C_C_SPALTE)	' Art.-Nr.Stücklistenartikel
 	C_Spalte_5s = GetFormatCell(nLieferBreiteSpalte_4	, 0, C_Zeile_s, C_C_SPALTE)	' kg
-	C_Spalte_6s = GetFormatCell(nLieferBreiteSpalte_5	, 0, C_Zeile_s, C_C_SPALTE)	' TextStÃ¼cklistenartikel
-	C_Spalte_2s = GetFormatCell(nLieferBreiteSpalte_2/2	, 0, C_Zeile_s, C_C_SPALTE)	' Menge - AnzahlStÃ¼cklistenartikel
-	C_Spalte_3s = GetFormatCell(nLieferBreiteSpalte_2/2	, 0, C_Zeile_s, C_C_SPALTE)	' Menge - EinheitStÃ¼cklistenartikel	
+	C_Spalte_6s = GetFormatCell(nLieferBreiteSpalte_5	, 0, C_Zeile_s, C_C_SPALTE)	' TextStücklistenartikel
+	C_Spalte_2s = GetFormatCell(nLieferBreiteSpalte_2/2	, 0, C_Zeile_s, C_C_SPALTE)	' Menge - AnzahlStücklistenartikel
+	C_Spalte_3s = GetFormatCell(nLieferBreiteSpalte_2/2	, 0, C_Zeile_s, C_C_SPALTE)	' Menge - EinheitStücklistenartikel	
 	C_Spalte_7s = GetFormatCell(nLieferBreiteSpalte_6	, 0, C_Zeile_s, C_C_SPALTE)	' Einzelpreis
 	C_Spalte_8s = GetFormatCell(nLieferBreiteSpalte_7	, 0, C_Zeile_s, C_C_SPALTE)	' Gesamtpreis
 else
 
-	'Aussehen der Spalten im Tabellenkopf und -kÃ¶rper, wenn es sich um einen Lieferschein handelt
+	'Aussehen der Spalten im Tabellenkopf und -körper, wenn es sich um einen Lieferschein handelt
 	C_H_Spalte_1 = GetFormatCell(nLieferBreiteSpalte_1 , 0, C_H_Zeile, C_C_H_SPALTE)	' Position
 	C_H_Spalte_2 = GetFormatCell(nLieferBreiteSpalte_2 , 0, C_H_Zeile, C_C_H_SPALTE)	' Menge
 	C_H_Spalte_3 = GetFormatCell(nLieferBreiteSpalte_3 , 0, C_H_Zeile, C_C_H_SPALTE)	' Art.-Nr.
@@ -3671,7 +3671,7 @@ else
 	C_Spalte_4 = GetFormatCell(nLieferBreiteSpalte_3	, 0, C_Zeile, C_C_SPALTE)	' Art.-Nr.
 	C_Spalte_5 = GetFormatCell(nLieferBreiteSpalte_4	, 0, C_Zeile, C_C_SPALTE)	' kg
 	C_Spalte_6 = GetFormatCell(nLieferBreiteSpalte_5	, 0, C_Zeile, C_C_SPALTE)	' Text
-	' keine Umbruch fÃ¼r Einzel und Gesamtpreis, deshalb die Zellen hier von Hand erzeugen
+	' keine Umbruch für Einzel und Gesamtpreis, deshalb die Zellen hier von Hand erzeugen
 	C_Spalte_7 = CreateCell(nLieferBreiteSpalte_6, 0, CELL_TYPE_DYNVERT + CELL_TYPE_VERT )
 	SetCellParent(C_Spalte_7, C_Zeile)
 	SetCellBackground(C_Spalte_7, COLOR_TRANSPARENT)
@@ -3679,18 +3679,18 @@ else
 	SetCellParent(C_Spalte_8, C_Zeile)
 	SetCellBackground(C_Spalte_8, COLOR_TRANSPARENT)
 
-	C_Spalte_1s = GetFormatCell(nLieferBreiteSpalte_1	, 0, C_Zeile_s, C_C_SPALTE)	' PositionStÃ¼cklistenartikel
-	C_Spalte_2s = GetFormatCell(nLieferBreiteSpalte_2/2	, 0, C_Zeile_s, C_C_SPALTE)	' Menge - AnzahlStÃ¼cklistenartikel
-	C_Spalte_3s = GetFormatCell(nLieferBreiteSpalte_2/2	, 0, C_Zeile_s, C_C_SPALTE)	' Menge - EinheitStÃ¼cklistenartikel
-	C_Spalte_4s = GetFormatCell(nLieferBreiteSpalte_3	, 0, C_Zeile_s, C_C_SPALTE)	' Art.-Nr.StÃ¼cklistenartikel
+	C_Spalte_1s = GetFormatCell(nLieferBreiteSpalte_1	, 0, C_Zeile_s, C_C_SPALTE)	' PositionStücklistenartikel
+	C_Spalte_2s = GetFormatCell(nLieferBreiteSpalte_2/2	, 0, C_Zeile_s, C_C_SPALTE)	' Menge - AnzahlStücklistenartikel
+	C_Spalte_3s = GetFormatCell(nLieferBreiteSpalte_2/2	, 0, C_Zeile_s, C_C_SPALTE)	' Menge - EinheitStücklistenartikel
+	C_Spalte_4s = GetFormatCell(nLieferBreiteSpalte_3	, 0, C_Zeile_s, C_C_SPALTE)	' Art.-Nr.Stücklistenartikel
 	C_Spalte_5s = GetFormatCell(nLieferBreiteSpalte_4	, 0, C_Zeile_s, C_C_SPALTE)	' kg
-	C_Spalte_6s = GetFormatCell(nLieferBreiteSpalte_5	, 0, C_Zeile_s, C_C_SPALTE)	' TextStÃ¼cklistenartikel
+	C_Spalte_6s = GetFormatCell(nLieferBreiteSpalte_5	, 0, C_Zeile_s, C_C_SPALTE)	' TextStücklistenartikel
 	C_Spalte_7s = GetFormatCell(nLieferBreiteSpalte_6	, 0, C_Zeile_s, C_C_SPALTE)	' Einzelpreis
 	C_Spalte_8s = GetFormatCell(nLieferBreiteSpalte_7	, 0, C_Zeile_s, C_C_SPALTE)	' Gesamtpreis
 
 end if
-	SetCellStandard(C_Spalte_2s, SchriftArtStandard, CELL_TEXT_RIGHT, -1)	'Menge StÃ¼cklistenartikel
-	SetCellStandard(C_Spalte_5s, SchriftArtStandard, CELL_TEXT_RIGHT, -1)	'kg StÃ¼cklistenartikel
+	SetCellStandard(C_Spalte_2s, SchriftArtStandard, CELL_TEXT_RIGHT, -1)	'Menge Stücklistenartikel
+	SetCellStandard(C_Spalte_5s, SchriftArtStandard, CELL_TEXT_RIGHT, -1)	'kg Stücklistenartikel
 
 	nBreite = GetCellWidth(C_H_Spalte_1) + GetCellWidth(C_H_Spalte_2) + GetCellWidth(C_H_Spalte_3) + GetCellWidth(C_H_Spalte_4) + GetCellWidth(C_H_Spalte_5)
 	SetCellStandard(C_H_Spalte_5, SchriftArtStandard, CELL_TEXT_LEFT, -1)
@@ -3702,7 +3702,7 @@ end if
 	SetCellStandard(C_H_Spalte_6, SchriftArtSpaltenKopf, CELL_TEXT_CENTER, -1)
 	SetCellStandard(C_H_Spalte_7, SchriftArtSpaltenKopf, CELL_TEXT_CENTER, -1)
 
-	'Ausrichtung des Textes im TabellenkÃ¶rper
+	'Ausrichtung des Textes im Tabellenkörper
 	SetRowStandard(C_Zeile, SchriftArtStandard, CELL_TEXT_RIGHT, -1)		'Die ganze Zeile
 	SetCellStandard(C_Spalte_1, SchriftArtStandard, CELL_TEXT_LEFT, -1)	'Pos
 	SetCellStandard(C_Spalte_2, SchriftArtStandard, CELL_TEXT_RIGHT, -1)	'Menge Stk
@@ -3713,7 +3713,7 @@ end if
 	SetCellStandard(C_Spalte_7, SchriftArtStandard, CELL_TEXT_RIGHT, -1) 'Einzelpreis
 	SetCellStandard(C_Spalte_8, SchriftArtStandard, CELL_TEXT_RIGHT, -1)	'Gesamtpreis
 
-	'Das Aussehen der Ãœberschriftenzeile
+	'Das Aussehen der Überschriftenzeile
 	if bTabelleMitKopf = JA then
 		if nSchraffurFarbeKopf = 16777215.0000 then
 			HandleLayout(C_H_Head, false, COLOR_TRANSPARENT, SchriftArtSpaltenKopf,  HorzLinienArt, VertLinienArt, nRand)
@@ -3725,7 +3725,7 @@ end if
 		end if
 	end if
 
-	'Aussehen der Zeilen im TabellenkÃ¶rper
+	'Aussehen der Zeilen im Tabellenkörper
 	bMitSchraffur = True
 	HandleLayout(C_Zeile, bMitSchraffur, nSchraffurFarbe, SchriftArtStandard, PEN_NULL, VertLinienArt, nRand)
 	HandleLayout(C_Zeile_s, bMitSchraffur, nSchraffurFarbe, SchriftArtStandard, PEN_NULL, VertLinienArt, nRand)
@@ -3733,7 +3733,7 @@ end if
 
 	'Definition der Zeile Gesamtbetrag
 	C_S_Zeile  = CreateCell(0, 0, CELL_TYPE_DYNHORZ + CELL_TYPE_DYNVERT + CELL_TYPE_HORZ)
-	'Die Zellen fÃ¼r den Gesmatbetrag
+	'Die Zellen für den Gesmatbetrag
 	nBreite = nLieferBreiteSpalte_1 + nLieferBreiteSpalte_2 + nLieferBreiteSpalte_3 + nLieferBreiteSpalte_4 + nLieferBreiteSpalte_5 + nLieferBreiteSpalte_6
 	'nBreite = GetCellWidth(C_H_Spalte_1) + GetCellWidth(C_H_Spalte_2) + GetCellWidth(C_H_Spalte_3) + GetCellWidth(C_H_Spalte_4) + GetCellWidth(C_H_Spalte_5)
 	C_S_Spalte_1 = GetFormatCell(nBreite, 0, C_S_Zeile, C_C_S_Spalte)
@@ -3747,13 +3747,13 @@ end if
 	
 	' wenn Lieferschein mit Preisen
 	IF nLieferTabelle >= TABELLE_6 then
-		'--- Zwischensumme und Ãœbertrag anzeigen ---
-		'Die Zellen der Ãœbertragzeile
+		'--- Zwischensumme und Übertrag anzeigen ---
+		'Die Zellen der Übertragzeile
 		C_HU_Zeile = GetFormatCell(0, 0, C_H_Head, C_C_H_ZEILE)
 		C_HU_Spalte_1 = GetFormatCell(nBreite, 0, C_HU_Zeile, C_C_S_SPALTE)
 		C_HU_Spalte_2 = GetFormatCell(GetCellWidth(C_H_Spalte_7), 0, C_HU_Zeile, C_C_S_SPALTE)
 		SetCellStandard(C_HU_Spalte_1, SchriftArtStandard, CELL_TEXT_LEFT, -1)
-		SetCellText(C_HU_Spalte_1, "Ãœbertrag")
+		SetCellText(C_HU_Spalte_1, "Übertrag")
 		SetCellText(C_HU_Spalte_2, "")
 		
 		SetCellText(C_S_Spalte_1, "Zwischensumme")
@@ -3770,7 +3770,7 @@ end if
 	'HandleLayout(C_S_Bottom, False, nSchraffurFarbeKopf, SchriftArtSpaltenKopf, PEN_NULL, VertLinienArt, nRand)
 '	SetCellBorder(C_S_Bottom, CELL_BORDER_TOP, 0, HorzLinienArt, COLOR_BLACK)
 
-	'Setzen des Textinhaltes der Ãœberschriftenzeile
+	'Setzen des Textinhaltes der Überschriftenzeile
 	if bTabelleMitKopf = NEIN then
 		SetCellText(C_H_Spalte_1, "" )
 		SetCellText(C_H_Spalte_2, "" )
@@ -3808,7 +3808,7 @@ end Function
 
 '////////////////////////////////////////////////////////////////////////////////////
 'Funktion - PrintArtikelText()
-'Drucken der zusÃ¤tzlichen Bezeichnungen der Artikel nach der Hauptartikelbezeichnung
+'Drucken der zusätzlichen Bezeichnungen der Artikel nach der Hauptartikelbezeichnung
 '///////////////////////////////////////////////////////////////
 Function PrintArtikelText( Spalte as CellType)
 Dim iMax As Numeric
@@ -3944,7 +3944,7 @@ end if 'Ende Berater
 	end if
 
 	
-	'Freifelder GerÃ¤t
+	'Freifelder Gerät
 	if (IS( POS_IST_GERAET )) OR (IS( POS_IST_GERAETALTERNATIV )) then
 		if (bArtikelFreifeld1) AND (Get(GERAET_FREIFELD1) <> "") then
 			ArtikelText = ArtikelText + szNewLine + Get(GERAET_FREIFELD1)
@@ -4012,7 +4012,7 @@ end if 'Ende Berater
 		
 		 ArtikelText = ArtikelText + Get(POS_ALLTEXT) 
 	end if
-	' nur wenn Spalte angezeigt wird, dann auch zusÃ¤tzlichen) Text darstellen
+	' nur wenn Spalte angezeigt wird, dann auch zusätzlichen) Text darstellen
 	
 	SetCellText(Spalte, ArtikelText)
 
@@ -4021,7 +4021,7 @@ End Function
 
 '////////////////////////////////////////////////////////////////////////////////////
 'Funktion - FuelleTabelleNetto()
-'FÃ¼llen der Tabelle fÃ¼r einen NettoAuftrag
+'Füllen der Tabelle für einen NettoAuftrag
 '////////////////////////////////////////////////////////////////
 Function FuelleTabelleNetto()
 	DIM bHatAbschlag as bool = false
@@ -4045,9 +4045,9 @@ Function FuelleTabelleNetto()
 	nLohnbetrag = 0
 	nSummeLohnbetrag = 0
 
-	DrawCell(C_H_Zeile, True)								'SpaltenÃœberschriften
+	DrawCell(C_H_Zeile, True)								'SpaltenÜberschriften
 	SetHeaderCell(C_H_Head)
-	' Ausgabe der Steuern, nur wenn ausgewÃ¤hlt
+	' Ausgabe der Steuern, nur wenn ausgewählt
 	IF IS(LAY_TAB_MIT_STEUER) then
 		SetFooterCell(C_S_Zeile)
 	else
@@ -4190,7 +4190,7 @@ Function FuelleTabelleNetto()
 				end if
 			end if
 		   SetCurrencyNKStellen(GetNumeric(FA_NACHKOMMAST_EK))											'setzen der Nachkommastellen wie in den Optionen
-			' WÃ¤hrung nur anzeigen, wenn Wert nicht 0
+			' Währung nur anzeigen, wenn Wert nicht 0
 			if (is (POS_IST_TEXTPOS) = true) OR  (is (POS_IST_ZWSUMME ) = true) OR  (is (POS_IST_GRUPPENTITEL) = true) OR  (is (POS_IST_GRUPPENSUMME) = true) OR (IS(POS_IST_KOMMENTAR) = true) OR (is (POS_IST_SEITENUMBRUCH)= true) then
 				nCurrencyFormat = CURRENCY_SYMBOL_HIDE
 			else
@@ -4199,7 +4199,7 @@ Function FuelleTabelleNetto()
 			if nBreiteSpalte_5 > 0 AND IS(POS_IST_GRUPPENTITEL) = false AND (is (POS_IST_GRUPPENSUMME) = false) AND (IS(POS_IST_STD_SUMME) = false) AND (IS(POS_IST_STD_TITELALTERNATIV) = FALSE) AND (IS(POS_IST_GAEB_SUMME) = false) AND (IS(POS_IST_STD_TITEL) = false) then
 				SetCelltext(C_Spalte_6, HCS(GetCurrencyFormat(POS_EINZELPREIS, nWaehrungID, nCurrencyFormat)))	'Ausgabe des Einzelpreises
 			end if
-		   SetCurrencyNKStellen( 2 )																				'setzen der Nachkommastellen auf 2 fÃ¼r rabatt und Gesamtpreis
+		   SetCurrencyNKStellen( 2 )																				'setzen der Nachkommastellen auf 2 für rabatt und Gesamtpreis
 			' Steuer statt Rabatt ausgeben
 			IF bSteuerStattRabatt THEN
 				'Prozentsatz des Steuersatzes bei Textpositionen, Titeln, Summenzeilen nicht ausgeben
@@ -4211,7 +4211,7 @@ Function FuelleTabelleNetto()
 					end if
 				end if
 			ELSE
-			if (GetNumeric(POS_RAB_PROZENT) <> 0) AND ((IS(POS_IST_STD_TITEL) = false) AND (IS(POS_IST_STD_TITELALTERNATIV) = false)) then															'wenn Rabatt ausgewÃ¤hlt			
+			if (GetNumeric(POS_RAB_PROZENT) <> 0) AND ((IS(POS_IST_STD_TITEL) = false) AND (IS(POS_IST_STD_TITELALTERNATIV) = false)) then															'wenn Rabatt ausgewählt			
 					SetCellText(C_Spalte_7, FormatNumeric("%.2f", GetNumeric(POS_RAB_PROZENT)) + strProzent)		'Ausgabe des Rabattes
 				end if
 			END IF
@@ -4225,7 +4225,7 @@ Function FuelleTabelleNetto()
 					SetCellText(C_Spalte_7a, FormatNumeric("%.2f", GetNumeric(POS_UST_PROZ)) + strProzent)		'Ausgabe des Steuersatzes in einer eigenen Spalte
 				end if
 			end if
-			' WÃ¤hrung nur anzeigen, wenn Wert nicht 0
+			' Währung nur anzeigen, wenn Wert nicht 0
 			if (is (POS_IST_TEXTPOS) = true) OR (IS(POS_IST_GRUPPENTITEL) = true OR IS(POS_IST_STD_TITEL) = true) OR (IS(POS_IST_KOMMENTAR) = true) OR (is (POS_IST_SEITENUMBRUCH)= true) then
 				nCurrencyFormat = CURRENCY_SYMBOL_HIDE
 			else
@@ -4314,7 +4314,7 @@ Function FuelleTabelleNetto()
 				
 				Result_D = NextRecord( "D" )
 			end while
-			'Wenn StÃ¼cklistenartikel dann.....
+			'Wenn Stücklistenartikel dann.....
 			if bStuecklistenArtikelAnzeigen then	
 				if is(ART_MIT_STUECKLISTE) = True Then
 					if bMitSchraffur = true then
@@ -4375,7 +4375,7 @@ Function FuelleTabelleNetto()
 				end if
 			end if
 
-			'Ende StÃ¼cklistenartikel
+			'Ende Stücklistenartikel
 			
 			LeereZellen()																							'Leeren der Zellen, setzen der Schraffur
 		End If
@@ -4398,7 +4398,7 @@ Function FuelleTabelleNetto()
 			bAuftrhatGeraet = true
 		end if
 		
-		Result_P= NextRecord(AUFTRPOSITION)				'NÃ¤chste Position
+		Result_P= NextRecord(AUFTRPOSITION)				'Nächste Position
 	End While
 	'Ende der Darstellung Rechnungsposten
 
@@ -4409,7 +4409,7 @@ Function FuelleTabelleNetto()
 
 	nSumme = 0
 
-	'Seitenumbruch, wenn es fÃ¼r die folgenden Zeilen nicht mehr auf dieser Seite reicht
+	'Seitenumbruch, wenn es für die folgenden Zeilen nicht mehr auf dieser Seite reicht
 	IF IS(LAY_TAB_MIT_STEUER) then
 		nPosition = GetAreaLength() - GetPosY() - 8 * GetCellHeight(C_Zeile_s)
 		If nPosition < 0  Then	
@@ -4439,7 +4439,7 @@ Function FuelleTabelleNetto()
 		end if
 	end if
 
-	' Ausgabe der Steuern, nur wenn ausgewÃ¤hlt
+	' Ausgabe der Steuern, nur wenn ausgewählt
 	IF IS(LAY_TAB_MIT_STEUER) then
 
 	if is(FA_IST_UMSATZSTEUERPFLICHTIG) then  'Kleinunternehmerregelung
@@ -4451,13 +4451,13 @@ Function FuelleTabelleNetto()
 			nSumme = 0 
 			'Nur wenn auch USt. berechnet wurde
 	'		If is(AUFTR_KEINE_UST) = false Then
-				' SteuerstÃ¤tze zÃ¤hlen
+				' Steuerstätze zählen
 				n = 0
 				nPosition = 0
-			' wir kÃ¶nnen die Anzahl direkt abfragen
+			' wir können die Anzahl direkt abfragen
 				If (Getnumeric("R", 59) <> 0) Or (GetNumeric("R", 83) <> 0) Or (GetNumeric("R", 103) <> 0) Or (GetNumeric("R", 39) <> 0) Then 
 					Steuern = True 	
-					n = ZaehleSteuersaetze()		''ZÃ¤hlen der einzelnen SteuersÃ¤tze und BetrÃ¤ge
+					n = ZaehleSteuersaetze()		''Zählen der einzelnen Steuersätze und Beträge
 					n = n + 1 	'' einen Dazu, zur Korrektur
 					nPosition = GetAreaLength() - GetPosY() - n * GetCellHeight(C_Zeile)
 				End If
@@ -4473,7 +4473,7 @@ Function FuelleTabelleNetto()
 
 				SetCellText(C_S_Spalte_2, HCS(GetCurrencyFormatValue("R", 110, nWaehrungID, nCurrencyFormatZero, nSumme)))
 				SetCellBorder(C_S_Zeile, CELL_BORDER_TOP, 0, HorzLinienArt, COLOR_BLACK)		'Nettobetrag
-				' wenn Steuern auf der nÃ¤chsten Seite dargestellt werden mÃ¼ssen, dann muÃŸ das Feld Nettobetrag
+				' wenn Steuern auf der nächsten Seite dargestellt werden müssen, dann muß das Feld Nettobetrag
 				' auch unten einen Strich haben
 				if nPosition < 0 then
 					SetCellBorder(C_S_Zeile, CELL_BORDER_BOTTOM, 0, HorzLinienArt, COLOR_BLACK)	
@@ -4487,15 +4487,15 @@ Function FuelleTabelleNetto()
 	
 				SelectFont(SchriftArtStandard)
 				RemoveAllTabs()
-				' wenn SteuersÃ¤tze nicht mehr auf diese Seite passen, dann Seitenumbruch und Darstellung
-				' auf der nÃ¤chsten Seite
+				' wenn Steuersätze nicht mehr auf diese Seite passen, dann Seitenumbruch und Darstellung
+				' auf der nächsten Seite
 				if nPosition < 0 Then
 					PageBreak()
 					SetCellBorder(C_S_Zeile, CELL_BORDER_TOP + CELL_BORDER_BOTTOM, 1, HorzLinienArt, COLOR_BLACK)		'Nettobetrag
 					DrawCell(C_S_Zeile, true)
 					SetCellBorder(C_S_Zeile, CELL_BORDER_TOP + CELL_BORDER_BOTTOM, 0, PEN_NULL, COLOR_BLACK)
 				End if
-				'Ausgabe der einzelnen Umsatzsteuernsteuer mit Satz und NettobetrÃ¤ge
+				'Ausgabe der einzelnen Umsatzsteuernsteuer mit Satz und Nettobeträge
 				i = 0
 				nNetTeilsum = 53
 				nBrutTeilsum = 58
@@ -4600,7 +4600,7 @@ Function FuelleTabelleNetto()
 				
 				DrawCell(C_S_Gesamt, true)
 				
-				'Seitenumbruch, wenn es fÃ¼r die folgenden Zeilen nicht mehr auf dieser Seite reicht 
+				'Seitenumbruch, wenn es für die folgenden Zeilen nicht mehr auf dieser Seite reicht 
 				nPosition = GetAreaLength() - GetPosY() - 8 * GetCellHeight(C_Zeile_s)
 				If nPosition < 0  Then								
 					DrawCell(C_S_Bottom, True)
@@ -4680,7 +4680,7 @@ Function FuelleTabelleNetto()
 						DrawCell(C_S_Gesamt, true)
 
 '//////////////////////////////////////////////////////////////////////////////////////////
-'SteuersÃ¤tze fÃ¼r Abschlagsrechnungen aufgeschlÃ¼sselt nach SteuersÃ¤tzen / Netto
+'Steuersätze für Abschlagsrechnungen aufgeschlüsselt nach Steuersätzen / Netto
 
 					SetHeaderCell(NULL)
 
@@ -4699,8 +4699,8 @@ Function FuelleTabelleNetto()
 						n = n + 1
 						nPosition = GetAreaLength() - GetPosY() - 4 * GetCellHeight(C_S_SteuerAbschlagText_1)
 					end if
-					' wenn SteuersÃ¤tze nicht mehr auf diese Seite passen, dann Seitenumbruch und Darstellung
-					' auf der nÃ¤chsten Seite
+					' wenn Steuersätze nicht mehr auf diese Seite passen, dann Seitenumbruch und Darstellung
+					' auf der nächsten Seite
 					if nPosition < 0 Then
 						If is("X", 15) then
 							If nPosition < 0  Then								
@@ -4710,7 +4710,7 @@ Function FuelleTabelleNetto()
 							End If
 						End If						
 					End if
-					'/Aufsummierung der SteuersÃ¤tze fÃ¼r Berechnung NETTO-Wert
+					'/Aufsummierung der Steuersätze für Berechnung NETTO-Wert
 					UST1 = GetNumeric("G", 33)
 					UST2 = GetNumeric("G", 34)
 					UST3 = GetNumeric("G", 35)
@@ -4726,7 +4726,7 @@ Function FuelleTabelleNetto()
 '					strWaehrung = " " + GetCurrencySymbol(AUFTR_RG_BETRAG, bWaehrungAlsText)
 
 					'///////////////////////////////////////
-					' Steuerausgabe nur wenn, 2 Teilsummen, oder zwei SteuersÃ¤tze vorhanden sind
+					' Steuerausgabe nur wenn, 2 Teilsummen, oder zwei Steuersätze vorhanden sind
 
 							If  ( nAnzahlSteuerAbschlag > 1 ) Or ( nAnzahlSteuerNebenAbschlag > 1 ) or ((nAnzahlSteuerAbschlag = 1) and (nAnzahlSteuerNebenAbschlag = 1)) then
 
@@ -4737,7 +4737,7 @@ Function FuelleTabelleNetto()
 
 								DrawCell(C_S_SteuerAbschlagText_1, True)
 
-								'Ausgabe der einzelnen Umsatzsteuernsteuer mit Satz und NettobetrÃ¤ge
+								'Ausgabe der einzelnen Umsatzsteuernsteuer mit Satz und Nettobeträge
 									i=0
 									nNetTeilsum = 53
 									nBrutTeilsum = 58
@@ -4790,7 +4790,7 @@ Function FuelleTabelleNetto()
 		
 								Else	'Wenn nur einen Umsatzsteuersatz in der Nebenleistung gibt
 									if (GetNumeric(ABS_RE_UST ) <> 0)  and (GetNumeric("G", 78) <> 0)  then
-										SetCellText(C_S_SteuerAbschlagText_1, "Die " + sUstText + "der Abschlagsrechnung setzt sich Netto " + HCS(FormatCurrency(CC_LOC, nCurrencyFormatDefault, Summe_Net)) + " zuzÃ¼glich " + FormatNumeric("%.2f", GetNumeric(AUFTR_NEBENL_UST_SATZ_1)) + " % auf Nebenleistungen = " + HCS(GetCurrencyFormat(AUFTR_UST_GESBETRAG, nWaehrungID, nCurrencyFormatDefault)) + " zusammen.")
+										SetCellText(C_S_SteuerAbschlagText_1, "Die " + sUstText + "der Abschlagsrechnung setzt sich Netto " + HCS(FormatCurrency(CC_LOC, nCurrencyFormatDefault, Summe_Net)) + " zuzüglich " + FormatNumeric("%.2f", GetNumeric(AUFTR_NEBENL_UST_SATZ_1)) + " % auf Nebenleistungen = " + HCS(GetCurrencyFormat(AUFTR_UST_GESBETRAG, nWaehrungID, nCurrencyFormatDefault)) + " zusammen.")
 										SetCellBorder(C_S_SteuerAbschlagText_1, CELL_BORDER_Bottom, 0, HORZLinienArt, COLOR_BLACK)
 										DrawCell(C_S_SteuerAbschlagText_1, True)
 									end if
@@ -4838,7 +4838,7 @@ Function FuelleTabelleNetto()
 		SetCellStandard(C_S_Spalte_1, SchriftArtGesamtbetrag, CELL_TEXT_LEFT, -1)
 		SetCellStandard(C_S_Spalte_2, SchriftArtGesamtbetrag, CELL_TEXT_RIGHT, -1)
 
-		' die Zellen fÃ¼r den Gesamtbetrag neu formatieren
+		' die Zellen für den Gesamtbetrag neu formatieren
 			SetCellBorder(C_S_Gesamt, CELL_BORDER_BOTTOM, 5, HorzLinienArt, COLOR_BLACK)
 			SetCellBorder(C_S_Gesamt, CELL_BORDER_TOP,    1, HorzLinienArt, COLOR_BLACK)
 		if VertLinienArt <> PEN_NULL then
@@ -4893,7 +4893,7 @@ Function FuelleTabelleNetto()
 		SetCellText(C_S_Spalte_2, "\n" + HCS(GetCurrencyFormat(AUFTR_RG_BETRAG, nWaehrungID, nCurrencyFormatZero)))
 		DrawCell(C_S_Gesamt, true)
 	END IF
-	'Zusatz fÃ¼r steuerfreie AuftrÃ¤ge nach Â§ 13b UStG. - ab 01.04.04! 
+	'Zusatz für steuerfreie Aufträge nach § 13b UStG. - ab 01.04.04! 
 	if b13Umsatzsteuer = TRUE then
 		ClearRow(C_S_Gesamt, "")
 		SetCellBorder(C_S_Spalte_1, CELL_BORDER_RIGHT, 0, PEN_NULL, COLOR_BLACK)
@@ -4927,7 +4927,7 @@ End Function
 
 '////////////////////////////////////////////////////////////////////////////////////
 'Funktion - FuelleTabelleBrutto()
-'FÃ¼llen der Tabelle fÃ¼r einen BruttoAuftrag
+'Füllen der Tabelle für einen BruttoAuftrag
 '////////////////////////////////////////////////////////////////
 Function FuelleTabelleBrutto()
 	dim bHatAbschlag as bool = false
@@ -4945,9 +4945,9 @@ Function FuelleTabelleBrutto()
 	nSummeLohnbetrag = 0
 
 	strProzent = ""
-	DrawCell(C_H_Zeile, True)								'SpaltenÃœberschriften
+	DrawCell(C_H_Zeile, True)								'SpaltenÜberschriften
 	SetHeaderCell(C_H_Head)
-	' Ausgabe der Steuern, nur wenn ausgewÃ¤hlt
+	' Ausgabe der Steuern, nur wenn ausgewählt
 	IF IS(LAY_TAB_MIT_STEUER) then
 		SetFooterCell(C_S_Zeile)
 	else
@@ -5083,7 +5083,7 @@ Function FuelleTabelleBrutto()
 			end if
 
 		   SetCurrencyNKStellen(GetNumeric(FA_NACHKOMMAST_EK))											'setzen der Nachkommastellen wie in den Optionen
-			' WÃ¤hrung nur anzeigen, wenn Wert nicht 0
+			' Währung nur anzeigen, wenn Wert nicht 0
 			if (is (POS_IST_TEXTPOS) = true) OR  (is (POS_IST_ZWSUMME ) = true OR  (is (POS_IST_GRUPPENTITEL) = true) OR  (is (POS_IST_GRUPPENSUMME) = true))  OR (IS(POS_IST_STD_TITEL) = true) OR (IS(POS_IST_KOMMENTAR) = true) OR (is (POS_IST_SEITENUMBRUCH)= true)then
 				nCurrencyFormat = CURRENCY_SYMBOL_HIDE
 			else
@@ -5092,7 +5092,7 @@ Function FuelleTabelleBrutto()
 			if nBreiteSpalte_5 > 0 AND (IS(POS_IST_GRUPPENTITEL) = false) AND (is (POS_IST_GRUPPENSUMME) = false) AND (IS(POS_IST_STD_SUMME) = false) AND (IS(POS_IST_STD_TITELALTERNATIV) = false) AND (IS(POS_IST_GAEB_SUMME) = false) AND (IS(POS_IST_STD_TITEL) = false) Then
 			SetCelltext(C_Spalte_6, HCS(GetCurrencyFormat(POS_EINZELPREIS, nWaehrungID, nCurrencyFormat)))	'Ausgabe des Einzelpreises
 			end if
-		   SetCurrencyNKStellen( 2 )																				'setzen der Nachkommastellen auf 2 fÃ¼r rabatt und Gesamtpreis
+		   SetCurrencyNKStellen( 2 )																				'setzen der Nachkommastellen auf 2 für rabatt und Gesamtpreis
 			' Steuer statt Rabatt ausgeben
 			IF bSteuerStattRabatt THEN
 				'Prozentsatz des Steuersatzes bei Textpositionen, Titeln, Summenzeilen nicht ausgeben
@@ -5104,7 +5104,7 @@ Function FuelleTabelleBrutto()
 					end if
 				end if
 			ELSE
-			if (GetNumeric(POS_RAB_PROZENT) <> 0) AND ((IS(POS_IST_STD_TITEL) = false) AND (IS(POS_IST_STD_TITELALTERNATIV) = false)) then															'wenn Rabatt ausgewÃ¤hlt			
+			if (GetNumeric(POS_RAB_PROZENT) <> 0) AND ((IS(POS_IST_STD_TITEL) = false) AND (IS(POS_IST_STD_TITELALTERNATIV) = false)) then															'wenn Rabatt ausgewählt			
 					SetCellText(C_Spalte_7, FormatNumeric("%.2f", GetNumeric(POS_RAB_PROZENT)) + strProzent)		'Ausgabe des Rabattes
 				end if
 			END IF
@@ -5117,7 +5117,7 @@ Function FuelleTabelleBrutto()
 					SetCellText(C_Spalte_7a, FormatNumeric("%.2f", GetNumeric(POS_UST_PROZ)) + strProzent)		'Ausgabe des Steuersatzes in einer eigenen Spalte
 				end if
 			end if
-			' WÃ¤hrung nur anzeigen, wenn Wert nicht 0
+			' Währung nur anzeigen, wenn Wert nicht 0
 			if (is (POS_IST_TEXTPOS) = true) OR (is (POS_IST_GRUPPENTITEL) = true) OR (IS(POS_IST_KOMMENTAR) = true) OR (is (POS_IST_SEITENUMBRUCH)= true) then
 				nCurrencyFormat = CURRENCY_SYMBOL_HIDE
 			else
@@ -5142,7 +5142,7 @@ Function FuelleTabelleBrutto()
 				AND (IS(POS_IST_STD_TITEL) = false) AND (IS(POS_IST_GAEB_TITEL)= false) AND (IS(POS_IST_GAEB_SUMME) = false) 
 				AND (IS(POS_IST_FREMDLEISTALTERNATIV)= false) AND (IS(POS_IST_GERAETALTERNATIV)= false) AND (IS(POS_IST_STDLEISTUNGALTERNATIV)= false) 
 				AND ((IS(POS_IST_STD_SUMME) = false) AND (bAlternativStandardleistung = false)) then
-				nSumme = nSumme + nBetrag																			'Aufsummieren fÃ¼r den Ãœbertrag, wenn keine Alternativpos
+				nSumme = nSumme + nBetrag																			'Aufsummieren für den Übertrag, wenn keine Alternativpos
 			end if
 			if (IS(POS_IST_KOMMENTAR) = false) AND (IS(POS_IST_GRUPPENTITEL) = false) AND (IS(POS_IST_GRUPPENSUMME) = false)then																
 				if GetNumeric(POS_STDL_IDNR) = 0 then
@@ -5277,7 +5277,7 @@ Function FuelleTabelleBrutto()
 			nLohnbetrag = GetNumeric(POS_SUMMEN_BRUTTO_NACH_AUFRAB)
 			nSummeLohnBetrag = nSummeLohnBetrag + nLohnbetrag 
 		end if
-		if IS(POS_IST_NEBENL) = FALSE then 'Da Nebenleistungen auÃŸerhalb der Tabelle
+		if IS(POS_IST_NEBENL) = FALSE then 'Da Nebenleistungen außerhalb der Tabelle
 			Schraffur()			
 		end if
 		if IS(POS_IST_STD_SUMME) then
@@ -5289,8 +5289,8 @@ Function FuelleTabelleBrutto()
 		if IS(POS_IST_GERAET) then
 			bAuftrhatGeraet = true
 		end if
-		' Standard zurÃ¼ckstellen
-		Result_P= NextRecord(AUFTRPOSITION)				'NÃ¤chste Position
+		' Standard zurückstellen
+		Result_P= NextRecord(AUFTRPOSITION)				'Nächste Position
 	End While
 	'Ende der Darstellung Rechnungsposten
 
@@ -5300,8 +5300,8 @@ Function FuelleTabelleBrutto()
 	SetHeaderCell(NULL)
 	nSumme = 0
 
-	'Seitenumbruch, wenn es fÃ¼r die folgenden Zeilen nicht mehr auf dieser Seite reicht 
-	' Ausgabe der Steuern, nur wenn ausgewÃ¤hlt
+	'Seitenumbruch, wenn es für die folgenden Zeilen nicht mehr auf dieser Seite reicht 
+	' Ausgabe der Steuern, nur wenn ausgewählt
 	IF IS(LAY_TAB_MIT_STEUER) then
 		nPosition = GetAreaLength() - GetPosY() - 8 * GetCellHeight(C_Zeile_s)
 		if b13Umsatzsteuer then
@@ -5331,7 +5331,7 @@ Function FuelleTabelleBrutto()
 	'///////////////////////////////////////////////////////////////
 	'---------------------Formatierung der Gesamtsummenzeile------
 	'BRUTTO
-	' Ausgabe der Steuern, nur wenn ausgewÃ¤hlt
+	' Ausgabe der Steuern, nur wenn ausgewählt
 	If IS(LAY_TAB_MIT_STEUER) then
 
 		nBreite = GetCellWidth(C_H_Spalte_1) + GetCellWidth(C_H_Spalte_2) + GetCellWidth(C_H_Spalte_3) + GetCellWidth(C_H_Spalte_4) + GetCellWidth(C_H_Spalte_5) + GetCellWidth(C_H_Spalte_6) + GetCellWidth(C_H_Spalte_6a) - (2*(GetCellWidth(C_H_Spalte_7)))
@@ -5385,7 +5385,7 @@ IF IS(LAY_TAB_MIT_STEUER) then
 				n = n + 1
 				nPosition = GetAreaLength() - GetPosY() - n * GetCellHeight(C_Zeile)
 			end if
-'/Aufsummierung der SteuersÃ¤tze fÃ¼r Berechnung NETTO-Wert
+'/Aufsummierung der Steuersätze für Berechnung NETTO-Wert
 UST1 = GetNumeric("R", 33)
 UST2 = GetNumeric("R", 34)
 UST3 = GetNumeric("R", 35)
@@ -5405,7 +5405,7 @@ Summe_Net = Summe_Ges - nSumme_Mwst
 strWaehrung = " " + GetCurrencySymbol(AUFTR_RG_BETRAG, bWaehrungAlsText)
 
 '///////////////////////////////////////
-' Steuerausgabe nur wenn, 2 Teilsummen, oder zwei SteuersÃ¤tze vorhanden sind
+' Steuerausgabe nur wenn, 2 Teilsummen, oder zwei Steuersätze vorhanden sind
 
 		If  ( nAnzahlSteuer > 1 ) Or ( nAnzahlSteuerNeben > 1 ) or ((nAnzahlSteuer = 1) and (nAnzahlSteuerNeben = 1)) then
 
@@ -5416,7 +5416,7 @@ strWaehrung = " " + GetCurrencySymbol(AUFTR_RG_BETRAG, bWaehrungAlsText)
 
 					DrawCell(C_S_SteuerBruttoText_1, True)
 
-					'Ausgabe der einzelnen Umsatzsteuernsteuer mit Satz und NettobetrÃ¤ge
+					'Ausgabe der einzelnen Umsatzsteuernsteuer mit Satz und Nettobeträge
 						i=0
 						nNetTeilsum = 53
 						nBrutTeilsum = 58
@@ -5486,13 +5486,13 @@ strWaehrung = " " + GetCurrencySymbol(AUFTR_RG_BETRAG, bWaehrungAlsText)
 				end if	'(b13Umsatzsteuer = FALSE)  ENDE 	
 			else	'Wenn nur einen Umsatzsteuersatz in der Nebenleistung gibt
 				if (GetNumeric("R", 23 ) <> 0)  and (GetNumeric(AUFTR_NEBENL_UST_SUM_1) <> 0)  then     'Nebenleistungen werden nicht mehr verwendet
-					SetCellText(C_S_SteuerBruttoText_1, "\nDer " + sTextGesamtbetrag + " setzt sich aus Netto " + HCS(FormatCurrency(CC_LOC, nCurrencyFormatDefault, Summe_Net)) + " zuzÃ¼glich " + FormatNumeric("%.2f", GetNumeric(AUFTR_NEBENL_UST_SATZ_1)) + " % aus Nebenleistungen = " + HCS(GetCurrencyFormat(AUFTR_UST_GESBETRAG, nWaehrungID, nCurrencyFormatDefault)) + " zusammen.")
+					SetCellText(C_S_SteuerBruttoText_1, "\nDer " + sTextGesamtbetrag + " setzt sich aus Netto " + HCS(FormatCurrency(CC_LOC, nCurrencyFormatDefault, Summe_Net)) + " zuzüglich " + FormatNumeric("%.2f", GetNumeric(AUFTR_NEBENL_UST_SATZ_1)) + " % aus Nebenleistungen = " + HCS(GetCurrencyFormat(AUFTR_UST_GESBETRAG, nWaehrungID, nCurrencyFormatDefault)) + " zusammen.")
 					SetCellBorder(C_S_SteuerBruttoText_1, CELL_BORDER_Bottom, 0, HORZLinienArt, COLOR_BLACK)
 					DrawCell(C_S_SteuerBruttoText_1, True)
 				else 'oder als Artikel...
 					if ((GetNumeric("R", 23 ) <> 0) and (GetNumeric(AUFTR_UST_SATZ_SUM_1) <> 0)) Or (IS(AUFTR_HAT_NULLSTEUER)) Or IS(AUFTR_HAT_OSS)  then
-					'An dieser Stelle wollen wir NullbetrÃ¤ge auch anzeigen fÃ¼r OSS und Nullsteuer
-						SetCellText(C_S_SteuerBruttoText_1, "\nDer " + sTextGesamtbetrag + " setzt sich aus Netto " + HCS(FormatCurrency(CC_LOC, nCurrencyOriginalFormat, Summe_Net)) + " zuzÃ¼glich " + FormatNumeric("%.2f", GetNumeric(AUFTR_UST_SATZ_SUM_1)) + " % " + sUstText + " = " + HCS(GetCurrencyFormat(AUFTR_UST_GESBETRAG, nWaehrungID, nCurrencyOriginalFormat)) + " zusammen.")
+					'An dieser Stelle wollen wir Nullbeträge auch anzeigen für OSS und Nullsteuer
+						SetCellText(C_S_SteuerBruttoText_1, "\nDer " + sTextGesamtbetrag + " setzt sich aus Netto " + HCS(FormatCurrency(CC_LOC, nCurrencyOriginalFormat, Summe_Net)) + " zuzüglich " + FormatNumeric("%.2f", GetNumeric(AUFTR_UST_SATZ_SUM_1)) + " % " + sUstText + " = " + HCS(GetCurrencyFormat(AUFTR_UST_GESBETRAG, nWaehrungID, nCurrencyOriginalFormat)) + " zusammen.")
 						SetCellBorder(C_S_SteuerBruttoText_1, CELL_BORDER_Bottom, 0, HORZLinienArt, COLOR_BLACK)
 						DrawCell(C_S_SteuerBruttoText_1, True)
 					
@@ -5544,9 +5544,9 @@ end if 'Ende Kleinunternehmerregelung
 	'---------------------Formatierung der Gesamtsummenzeile------
 'BRUTTO
 	
-	' Ausgabe der Steuern, nur wenn ausgewÃ¤hlt
+	' Ausgabe der Steuern, nur wenn ausgewählt
 'IF IS(LAY_TAB_MIT_STEUER) then
-		'Seitenumbruch, wenn es fÃ¼r die folgenden Zeilen nicht mehr auf dieser Seite reicht 
+		'Seitenumbruch, wenn es für die folgenden Zeilen nicht mehr auf dieser Seite reicht 
 		nAbschlag = GetNumeric(AUFTR_ABSCHLAG_NETTO)
 		if nAbschlag > 0 then 
 			nPosition = GetAreaLength() - GetPosY() - 6 * GetCellHeight(C_Zeile_s)
@@ -5678,7 +5678,7 @@ end if 'Ende Kleinunternehmerregelung
 
 					DrawCell(C_S_Forder, true)
 '//////////////////////////////////////////////////////////////////////////////////////////
-'SteuersÃ¤tze fÃ¼r Abschlagsrechnungen aufgeschlÃ¼sselt nach SteuersÃ¤tzen / Brutto
+'Steuersätze für Abschlagsrechnungen aufgeschlüsselt nach Steuersätzen / Brutto
 
 					SetHeaderCell(NULL)
 
@@ -5697,8 +5697,8 @@ end if 'Ende Kleinunternehmerregelung
 						n = n + 1
 						nPosition = GetAreaLength() - GetPosY() - 4 * GetCellHeight(C_S_SteuerAbschlagText_1)
 					end if
-					' wenn SteuersÃ¤tze nicht mehr auf diese Seite passen, dann Seitenumbruch und Darstellung
-					' auf der nÃ¤chsten Seite
+					' wenn Steuersätze nicht mehr auf diese Seite passen, dann Seitenumbruch und Darstellung
+					' auf der nächsten Seite
 					if nPosition < 0 Then
 						If is("X", 15) then
 							If nPosition < 0  Then								
@@ -5709,7 +5709,7 @@ end if 'Ende Kleinunternehmerregelung
 						End If						
 					End if
 
-					'/Aufsummierung der SteuersÃ¤tze fÃ¼r Berechnung NETTO-Wert
+					'/Aufsummierung der Steuersätze für Berechnung NETTO-Wert
 					UST1 = GetNumeric("G", 33)
 					UST2 = GetNumeric("G", 34)
 					UST3 = GetNumeric("G", 35)
@@ -5723,7 +5723,7 @@ end if 'Ende Kleinunternehmerregelung
 					UstNeben5 = GetNumeric("G", 82)
 
 					'///////////////////////////////////////
-					' Steuerausgabe nur wenn, 2 Teilsummen, oder zwei SteuersÃ¤tze vorhanden sind
+					' Steuerausgabe nur wenn, 2 Teilsummen, oder zwei Steuersätze vorhanden sind
 
 							If  ( nAnzahlSteuerAbschlag > 1 ) Or ( nAnzahlSteuerNebenAbschlag > 1 ) or ((nAnzahlSteuerAbschlag = 1) and (nAnzahlSteuerNebenAbschlag = 1)) then
 
@@ -5734,7 +5734,7 @@ end if 'Ende Kleinunternehmerregelung
 
 								DrawCell(C_S_SteuerAbschlagText_1, True)
 
-								'Ausgabe der einzelnen Umsatzsteuernsteuer mit Satz und NettobetrÃ¤ge
+								'Ausgabe der einzelnen Umsatzsteuernsteuer mit Satz und Nettobeträge
 									i=0
 									nNetTeilsum = 53
 									nBrutTeilsum = 58
@@ -5832,7 +5832,7 @@ end if 'Ende Kleinunternehmerregelung
 		SetCellStandard(C_S_Forder_4, SchriftArtGesamtbetrag, CELL_TEXT_RIGHT, -1)
 			
 	
-		' die Zellen fÃ¼r den Gesamtbetrag neu formatieren
+		' die Zellen für den Gesamtbetrag neu formatieren
 		SetCellBorder(C_S_Forder, CELL_BORDER_BOTTOM, 5, HorzLinienArt, COLOR_BLACK)
 		SetCellBorder(C_S_Forder, CELL_BORDER_TOP,    1, HorzLinienArt, COLOR_BLACK)
 		if VertLinienArt <> PEN_NULL then
@@ -5894,12 +5894,12 @@ End Function
 
 '////////////////////////////////////////////////////////////////////////////////////
 'Funktion - FuelleTabelleLieferschein()
-'FÃ¼llen der Tabelle fÃ¼r einen Auftrag, wenn Lieferschein
+'Füllen der Tabelle für einen Auftrag, wenn Lieferschein
 '/////////////////////////////////////////////////////////////
 Function FuelleTabelleLieferschein()
 	DIM nUst as numeric = 0
 
-	DrawCell(C_H_Zeile, True)								'SpaltenÃœberschriften
+	DrawCell(C_H_Zeile, True)								'SpaltenÜberschriften
 	SetHeaderCell(C_H_Head)
 	SetFooterCell(C_S_Zeile)
 
@@ -5981,13 +5981,13 @@ Function FuelleTabelleLieferschein()
 						If GetNumeric(POS_GEWICHT_GES) <> 0 Then											'Es Gibt einen Kiloeintrag
 							nGewicht = GetNumeric(POS_GEWICHT_GES)											'Kilo
 							SetCellText(C_Spalte_5, Formatnumeric("%.3f", nGewicht) + strGewicht)'Eintrag in die Tabelle
-							nGewichtSumme = nGewichtSumme + nGewicht										'Aufsummieren fÃ¼r den Ãœbertrag, wenn keine Alternativpos
+							nGewichtSumme = nGewichtSumme + nGewicht										'Aufsummieren für den Übertrag, wenn keine Alternativpos
 						END IF
 					end if
 				END IF
 			END IF																
 
-			' alle Auftragsarten auÃŸer Zwischensumme
+			' alle Auftragsarten außer Zwischensumme
 			IF IS( POS_IST_ZWSUMME ) = false then
 				if IS (POS_IST_KOMMENTAR) then
 					SelectCellFont(C_Spalte_6, SchriftArtKommentar)
@@ -6014,9 +6014,9 @@ Function FuelleTabelleLieferschein()
 						end if
 					end if
 				end if
-				' WÃ¤hrung nur anzeigen, wenn Wert nicht
+				' Währung nur anzeigen, wenn Wert nicht
 				if is(AUFTR_IST_PREISANGABEN_BRUT) then
-					' WÃ¤hrung nur anzeigen, wenn Wert nicht 0
+					' Währung nur anzeigen, wenn Wert nicht 0
 					if (is (POS_IST_TEXTPOS) = true) OR (is (POS_IST_GRUPPENTITEL) = true) OR (IS(POS_IST_GAEB_TITEL)) OR (IS(POS_IST_KOMMENTAR) = true) OR (is (POS_IST_SEITENUMBRUCH)= true) then
 						nCurrencyFormat = CURRENCY_SYMBOL_HIDE
 					else
@@ -6025,7 +6025,7 @@ Function FuelleTabelleLieferschein()
 					strTemp = HCS(GetCurrencyFormatValue(POS_GES_BRUTPREIS, nWaehrungID, nCurrencyFormat, nBetrag))
 				else
 					' Nettopreise (ohne Mwst)
-					' WÃ¤hrung nur anzeigen, wenn Wert nicht 0
+					' Währung nur anzeigen, wenn Wert nicht 0
 					if (is (POS_IST_TEXTPOS) = true) OR  (is (POS_IST_GRUPPENTITEL) = true) OR (IS(POS_IST_STD_TITEL) = true)  OR (IS(POS_IST_GAEB_TITEL)) OR (IS(POS_IST_KOMMENTAR) = true)  AND (IS(POS_IST_STD_TITEL) = false) OR (is (POS_IST_SEITENUMBRUCH)= true) then
 						nCurrencyFormat = CURRENCY_SYMBOL_HIDE
 					else
@@ -6118,7 +6118,7 @@ Function FuelleTabelleLieferschein()
 				end while						
 
 
-				'mit StÃ¼cklistenartikel
+				'mit Stücklistenartikel
 				if bStuecklistenArtikelAnzeigen then	
 					if is(ART_MIT_STUECKLISTE) = True Then
 						if bMitSchraffur = true then
@@ -6182,7 +6182,7 @@ Function FuelleTabelleLieferschein()
 						end if
 					end if
 				end if 
-				'setzen der Nachkommastellen auf 2 fÃ¼r rabatt und Gesamtpreis
+				'setzen der Nachkommastellen auf 2 für rabatt und Gesamtpreis
 				' Abfrage, ob die Preise Brutto-oder Nettopreise sind
 				nUst = GetNumeric(POS_UST_PROZ)
 			END IF										
@@ -6191,7 +6191,7 @@ Function FuelleTabelleLieferschein()
 		END IF	'Pos ist Nebenleistung
 
 									
-		Result_P= NextRecord(AUFTRPOSITION)		'NÃ¤chste Position
+		Result_P= NextRecord(AUFTRPOSITION)		'Nächste Position
 	End While
 	'Ende der Positionen
 
@@ -6203,11 +6203,11 @@ Function FuelleTabelleLieferschein()
 
 	dim bGesamtGedruckt as bool = false
 
-	' Ausgabe des Gesamtbetrags, wenn Steuer und Gesamtbetrag Ã¼ber den Assi gewÃ¤hlt
+	' Ausgabe des Gesamtbetrags, wenn Steuer und Gesamtbetrag über den Assi gewählt
 	IF IS(LAY_TAB_MIT_STEUER) THEN
 		' wenn Lieferschein mit Preisen
 		IF nLieferTabelle >= TABELLE_6 then
-			' die Zellen fÃ¼r den Gesamtbetrag neu formatieren
+			' die Zellen für den Gesamtbetrag neu formatieren
 			SetCellBorder(C_S_Zeile, CELL_BORDER_TOP + CELL_BORDER_BOTTOM, 0, HorzLinienArt, COLOR_BLACK)
 			if VertLinienArt <> PEN_NULL then
 				SetCellBorder(C_S_Zeile, CELL_BORDER_LEFT + CELL_BORDER_RIGHT, 0, PEN_SOLID, COLOR_BLACK)
@@ -6236,7 +6236,7 @@ Function FuelleTabelleLieferschein()
 		END IF
 	END IF
 
-	' wenn kein Gesamtbetrag gedruckt wurde, dann brauchen wir trotzdem den abschlieÃŸenden Strich fÃ¼r die Tabelle
+	' wenn kein Gesamtbetrag gedruckt wurde, dann brauchen wir trotzdem den abschließenden Strich für die Tabelle
 	if bGesamtGedruckt = false then
 		SetCellText(C_S_Spalte_1, "" )
 		SetCellText(C_S_Spalte_2, "" )
@@ -6264,7 +6264,7 @@ Function FuelleTabelleLieferschein()
 	If nGewichtSumme <> 0 then																'Wenn es Kilos auf dem Lieferschein gibt
 		LF
 		LF
-		TL("Das Nettogewicht betrÃ¤gt " + FormatNumeric( "%.3f", nGewichtSumme ) + " kg.")
+		TL("Das Nettogewicht beträgt " + FormatNumeric( "%.3f", nGewichtSumme ) + " kg.")
 	end if
 End Function
 
@@ -6308,7 +6308,7 @@ dim bPageBreak as bool = FALSE
 dim nTemp as numeric = 0
 
 Result_R = FirstRecord(AUFTRAG)				'Erste Rechnung oder sonstiges
-' fÃ¼r die erste Seite werden die Funktionen des Seitenwechsels bereits hier aufgerufen
+' für die erste Seite werden die Funktionen des Seitenwechsels bereits hier aufgerufen
 if Result_R then
 	' hier den Rumpfbereich wieder an den oberen Rand des Formulars ziehen, damit die nachfolgenden Felder
 	' nicht tiefer dargestellt werden
@@ -6339,30 +6339,30 @@ While Result_R Do
 		strText13bUstG = strSeiteText1
 		strText13bUstGAbschlag = strSeiteText1
 	else
-		strText13bUstG = "Bei den vorgenannten Leistungen handelt es sich um eine sog. Bauleistung,\nfÃ¼r die der Ãœbergang der Steuerschuldnerschaft gem. Â§ 13b UStG gilt. \nDie Umsatzsteuer ist somit vom LeistungsempfÃ¤nger beim Finanzamt anzumelden und abzufÃ¼hren.\nEs gilt die Steuerschuldnerschaft des LeistungsempfÃ¤ngers."
-		strText13bUstGAbschlag = "Bei den vorgenannten Leistungen der Abschlagsrechnung handelt es sich um eine sog. Bauleistung,\nfÃ¼r die der Ãœbergang der Steuerschuldnerschaft gem. Â§ 13b UStG gilt. \nDie Umsatzsteuer ist somit vom LeistungsempfÃ¤nger beim Finanzamt anzumelden und abzufÃ¼hren.\nEs gilt die Steuerschuldnerschaft des LeistungsempfÃ¤ngers."
+		strText13bUstG = "Bei den vorgenannten Leistungen handelt es sich um eine sog. Bauleistung,\nfür die der Übergang der Steuerschuldnerschaft gem. § 13b UStG gilt. \nDie Umsatzsteuer ist somit vom Leistungsempfänger beim Finanzamt anzumelden und abzuführen.\nEs gilt die Steuerschuldnerschaft des Leistungsempfängers."
+		strText13bUstGAbschlag = "Bei den vorgenannten Leistungen der Abschlagsrechnung handelt es sich um eine sog. Bauleistung,\nfür die der Übergang der Steuerschuldnerschaft gem. § 13b UStG gilt. \nDie Umsatzsteuer ist somit vom Leistungsempfänger beim Finanzamt anzumelden und abzuführen.\nEs gilt die Steuerschuldnerschaft des Leistungsempfängers."
 	end if
 
 	if bSeiteText6 then
 		strText13bUstGSo = strSeiteText6
 		strText13bUstGAbschlagSo = strSeiteText6
 	else
-		strText13bUstGSo = "Bei den vorgenannten Leistungen handelt es sich um sonstige Leistungen EG\nnach Â§13b UStG. Der LeistungsempfÃ¤nger schuldet die Umsatzsteuer.\nEs gilt die Steuerschuldnerschaft des LeistungsempfÃ¤ngers (Reverse-Charge)."
-		strText13bUstGAbschlagSo = "Bei den vorgenannten Leistungen der Abschlagsrechnung handelt es sich um sonstige Leistungen EG\nnach Â§13b UStG. Der LeistungsempfÃ¤nger schuldet die Umsatzsteuer.\nEs gilt die Steuerschuldnerschaft des LeistungsempfÃ¤ngers (Reverse-Charge)."
+		strText13bUstGSo = "Bei den vorgenannten Leistungen handelt es sich um sonstige Leistungen EG\nnach §13b UStG. Der Leistungsempfänger schuldet die Umsatzsteuer.\nEs gilt die Steuerschuldnerschaft des Leistungsempfängers (Reverse-Charge)."
+		strText13bUstGAbschlagSo = "Bei den vorgenannten Leistungen der Abschlagsrechnung handelt es sich um sonstige Leistungen EG\nnach §13b UStG. Der Leistungsempfänger schuldet die Umsatzsteuer.\nEs gilt die Steuerschuldnerschaft des Leistungsempfängers (Reverse-Charge)."
 	end if
 
 	if is(AUFTR_KD_UMSAETZE_NICHT_STEUERBAR) Then
 		sGrundstfrei = GetGrundDerSteuerbefreiung(true)
 	end if
 
-	'Aufbau und FÃ¼llen des TabellengerÃ¼stes
+	'Aufbau und Füllen des Tabellengerüstes
 	If is(AUFTR_IST_LS) then
 		BaueTabelleLieferschein()
 		FuelleTabelleLieferschein()
-	else											'alle anderen Auftragsarten (Rechnung, AuftragsbestÃ¤tigung,....)
+	else											'alle anderen Auftragsarten (Rechnung, Auftragsbestätigung,....)
 		' Unterscheidung zwischen Brutto und Netto Auftragstabelle
 		'if bIstAuftragBrutto then
-		'Unterscheidung zwischen Brutto und Netto Auftragstabelle jetzt direkt Ã¼ber die Brutto/Nettokennung des Aufttrags
+		'Unterscheidung zwischen Brutto und Netto Auftragstabelle jetzt direkt über die Brutto/Nettokennung des Aufttrags
 		if is(AUFTR_IST_PREISANGABEN_BRUT) then
 			BaueTabelleBrutto()									
 			FuelleTabelleBrutto()
@@ -6372,7 +6372,7 @@ While Result_R Do
 		end if
 	end if
 
-	'Alle Felder lÃ¶schen
+	'Alle Felder löschen
 	LeereZellen()
 
 	SetFooterCell(NULL)
@@ -6408,7 +6408,7 @@ While Result_R Do
 	end if
 	bBildExist = false
 
-	' nÃ¤chste Rechnung oder sonstiges
+	' nächste Rechnung oder sonstiges
 	Result_R = NextRecord(AUFTRAG)	
 	
 	' wenn neuer Auftrag, dann auf neuer Seite darstellen
@@ -6420,7 +6420,7 @@ While Result_R Do
 		' nicht tiefer dargestellt werden
 		SetBodyMargin(nRandLinks, nRandOben, nRandRechts, nRandUnten + nFusszeileHoehe + 10)
 
-		' Pagebreak lÃ¶st Event Fusszeile aus und zÃ¤hlt die Auftragsseite hoch
+		' Pagebreak löst Event Fusszeile aus und zählt die Auftragsseite hoch
 		' deshalb die Auftragsseite hier auf 0 setzen
 		nAuftragPage = 0
 		bEndeAuftragsbeschreibung = false
