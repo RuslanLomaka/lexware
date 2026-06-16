@@ -938,6 +938,8 @@ Include "layout.inc.lsf"
 Dim bSIGZielLayout as bool = TRUE
 Dim nSIGGruen as Numeric = 6992981
 Dim SchriftArtSIGKopf as FontType = CreateFont("Arial", 7, FONT_NORMAL, COLOR_BLACK)
+Dim SchriftArtSIGTitel as FontType = CreateFont("Arial", 11, FONT_BOLD, COLOR_BLACK)
+Dim SchriftArtSIGInfoFett as FontType = CreateFont("Arial", 9, FONT_BOLD, COLOR_BLACK)
 Dim SchriftArtSIGTabellenKopf as FontType = CreateFont("Arial", 9, FONT_BOLD, COLOR_WHITE)
 Dim SchriftArtSIGFooter as FontType = CreateFont("Arial", 7, FONT_NORMAL, COLOR_BLACK)
 
@@ -955,10 +957,10 @@ if bSIGZielLayout then
 	nSichtfensterLinks = nRandLinks
 	nSichtfensterOben = nRandOben + 2.00 cm
 	nInfoFeldLinks = nRandLinks + 9.80 cm
-	nInfoFeldOben = nRandOben + 2.90 cm
+	nInfoFeldOben = nRandOben + 3.05 cm
 	nInfoFeldBreite = 6.70 cm
 	nBetrefftextLinks = nRandLinks
-	nBetrefftextOben = nRandOben + 6.55 cm
+	nBetrefftextOben = nRandOben + 6.10 cm
 	nFirmenLogoLinks = nRandLinks + 12.60 cm
 	nFirmenLogoOben = nRandOben + 0.05 cm
 	nFirmenLogoBreite = 3.70 cm
@@ -1461,6 +1463,42 @@ Function PrintInfoBlock(Tabs as String, Schriftart as FontType)
 	SelectFont(SchriftArtStandard)
 End Function
 
+Function SIGInfoBlock()
+	Dim sBelegNr as string = Get(AUFTR_BELEG_NR)
+	Dim sBelegDatum as string = FormatDate("%d.%m.%Y", GetDate(AUFTR_BELEGDATUM))
+	Dim sKundenNr as string = Get(AUFTR_KD_NR)
+	Dim sBestellNr as string = Get(AUFTR_BESTEL_NR)
+
+	RemoveAllTabs()
+	SelectFont(SchriftArtSIGTitel)
+	SetPos(9.45 cm, 1.20 cm)
+	TL("Rechnung")
+
+	SelectFont(SchriftArtStandard)
+	SetTabs("L0")
+	SetPos(9.45 cm, 2.05 cm)
+	TL(sBelegNr)
+
+	SetPos(12.85 cm, 1.80 cm)
+	TL(sBelegDatum)
+	SetPos(12.85 cm, 2.15 cm)
+	TL("Seite " + FormatNumeric("%.0f", nAuftragPage) + " von 1")
+
+	SetPos(8.75 cm, 3.95 cm)
+	SetTabs("L0 L350")
+	SelectFont(SchriftArtSIGInfoFett)
+	TL("Rechnung No" + Tab + sBelegNr)
+	TL("Datum" + Tab + sBelegDatum)
+	SelectFont(SchriftArtStandard)
+	TL("Kundennummer" + Tab + sKundenNr)
+	TL("Bestellnummer" + Tab + sBestellNr)
+	if sBestellNr <> "" then
+		TL("Bestelldatum" + Tab + FormatDate("%d.%m.%Y", GetDate(AUFTR_BELEGDATUM)))
+	end if
+
+	SelectFont(SchriftArtStandard)
+End Function
+
 
 '////////////////////////////////////////////////////////////////////////////////////
 'Funktion - PrintInfoZeile
@@ -1737,6 +1775,20 @@ Function PrintBetreffText(Schriftart1 as FontType, Schriftart2 as FontType)
 
 	' wieder Standardschriftart
 	SelectFont(SchriftArtStandard)
+End Function
+
+Function SIGBetreffText()
+	Dim MaximaleHoehe as numeric = GetAreaLength() - 4 cm
+	if	nBetrefftextOben > MaximaleHoehe then
+		nBetrefftextOben = MaximaleHoehe
+	end if
+
+	SetPos(nBetrefftextLinks-nRandLinks, nBetrefftextOben-nRandOben)
+	SelectFont(SchriftArtStandard)
+	SetWordWrap(TRUE)
+	TL(Get(AUFTR_BESCHR_ALL))
+	LF
+	bEndeAuftragsbeschreibung = true
 End Function
 
 '////////////////////////////////////////////////////////////////////////////////////
@@ -2372,11 +2424,19 @@ Function Seitenwechsel()
 		' Infofeld anzeigen, wenn ausgewählt
 		if bMitInfofeldAufSeite1 then
 			SetFormatNumericOptions(FN_CUSTOM, ",", "")
-			PrintInfoBlock("L" + FormatNumeric("%.0f", nInfofeldLinks-nRandLinks) + "R" + FormatNumeric("%.0f", nInfofeldLinks - nRandLinks + nInfoFeldBreite), SchriftArtInfofeld)
+			if bSIGZielLayout then
+				SIGInfoBlock()
+			else
+				PrintInfoBlock("L" + FormatNumeric("%.0f", nInfofeldLinks-nRandLinks) + "R" + FormatNumeric("%.0f", nInfofeldLinks - nRandLinks + nInfoFeldBreite), SchriftArtInfofeld)
+			end if
 		end if
 		' Betrefftext anzeigen, wenn ausgewählt
 		if bMitBetrefftextAufSeite1 then
-			PrintBetreffText(SchriftArtBetrefftext1, SchriftArtBetrefftext2)
+			if bSIGZielLayout then
+				SIGBetreffText()
+			else
+				PrintBetreffText(SchriftArtBetrefftext1, SchriftArtBetrefftext2)
+			end if
 		end if
 		if bFalzmarkeOben then
 			SetPen(2, PEN_SOLID, COLOR_BLACK) 
