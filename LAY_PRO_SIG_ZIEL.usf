@@ -937,6 +937,10 @@ Include "layout.inc.lsf"
 ' die vom Lexware-Layoutassistenten geladenen Werte ueberschreiben.
 Dim bSIGZielLayout as bool = TRUE
 Dim nSIGGruen as Numeric = 6992981
+Dim strSIGBildPfad as string = "C:/ProgramData/Lexware/professional/Formulare/faktura pro/IMAGES/"
+Dim strSIGBackgroundBild as string = strSIGBildPfad + "BACKGROUND.png"
+Dim strSIGGreenLineBild as string = strSIGBildPfad + "GREEN_LINE.png"
+Dim strSIGLogoBild as string = strSIGBildPfad + "LOGO.png"
 Dim SchriftFontSIG as string = "Roboto"
 Dim SchriftArtSIGKopf as FontType = CreateFont(SchriftFontSIG, 8, FONT_NORMAL, COLOR_BLACK)
 Dim SchriftArtSIGTitel as FontType = CreateFont(SchriftFontSIG, 12, FONT_BOLD, COLOR_BLACK)
@@ -1890,16 +1894,13 @@ Function SIGKopfZeile()
 	RemoveAllTabs()
 	SetFormatNumericOptions(FN_CUSTOM, "","")
 
+	DrawImage(-nRandLinks, -nRandOben, nSeitenBreite, nSeitenHoehe, strSIGBackgroundBild)
+
 	SetPos(0, 72)
 	TL("Smart Industry Group GmbH | Von-Werthern-Str. 4A | 96487 Doerfles-Esbach | Deutschland")
 
-	if sFirmenLogoQuelle <> "" then
-		DrawImage(1225, -112, 430, 286, sFirmenLogoQuelle)
-	end if
-
-	SetPen(2, PEN_SOLID, nSIGGruen)
-	SetPos(0, 118)
-	DrawLine(1700, GetPosY())
+	DrawImage(1225, -112, 430, 286, strSIGLogoBild)
+	DrawImage(0, 115, 1700, 12, strSIGGreenLineBild)
 
 	SelectFont(SchriftArtStandard)
 End Function
