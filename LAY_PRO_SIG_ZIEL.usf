@@ -1485,15 +1485,6 @@ Function SIGInfoBlock()
 	SetPos(9.45 cm, 1.60 cm)
 	TL("Rechnung")
 
-	SelectFont(SchriftArtSIGInfo)
-	SetTabs("L0")
-	SetPos(9.45 cm, 2.05 cm)
-	TL(sBelegNr)
-
-	SetPos(12.85 cm, 1.80 cm)
-	TL(sBelegDatum)
-	SetPos(12.85 cm, 2.15 cm)
-	TL("Seite " + FormatNumeric("%.0f", nAuftragPage) + " von 1")
 
 	SelectFont(SchriftArtSIGInfoFett)
 	SetPos(8.75 cm, 3.95 cm)
