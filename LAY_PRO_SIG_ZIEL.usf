@@ -1870,13 +1870,13 @@ Function SIGKopfZeile()
 	SetPos(0, 72)
 	TL("Smart Industry Group GmbH | Von-Werthern-Str. 4A | 96487 Doerfles-Esbach | Deutschland")
 
+	if sFirmenLogoQuelle <> "" then
+		DrawImage(1225, -112, 430, 286, sFirmenLogoQuelle)
+	end if
+
 	SetPen(2, PEN_SOLID, nSIGGruen)
 	SetPos(0, 118)
 	DrawLine(1700, GetPosY())
-
-	if sFirmenLogoQuelle <> "" then
-		DrawImage(1225, -62, 430, 286, sFirmenLogoQuelle)
-	end if
 
 	SelectFont(SchriftArtStandard)
 End Function
