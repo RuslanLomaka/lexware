@@ -946,8 +946,6 @@ Dim SchriftArtSIGKopf as FontType = CreateFont(SchriftFontSIG, 8, FONT_NORMAL, C
 Dim SchriftArtSIGTitel as FontType = CreateFont(SchriftFontSIG, 12, FONT_BOLD, COLOR_BLACK)
 Dim SchriftArtSIGInfo as FontType = CreateFont(SchriftFontSIG, 8, FONT_NORMAL, COLOR_BLACK)
 Dim SchriftArtSIGInfoFett as FontType = CreateFont(SchriftFontSIG, 8, FONT_BOLD, COLOR_BLACK)
-Dim SchriftArtSIGMeta as FontType = CreateFont(SchriftFontSIG, 15, FONT_NORMAL, COLOR_BLACK)
-Dim SchriftArtSIGMetaFett as FontType = CreateFont(SchriftFontSIG, 15, FONT_BOLD, COLOR_BLACK)
 Dim SchriftArtSIGTabellenKopf as FontType = CreateFont(SchriftFontSIG, 10, FONT_BOLD, COLOR_WHITE)
 Dim SchriftArtSIGFooter as FontType = CreateFont(SchriftFontSIG, 8, FONT_NORMAL, COLOR_BLACK)
 Dim SchriftArtSIGFooterFett as FontType = CreateFont(SchriftFontSIG, 8, FONT_BOLD, COLOR_BLACK)
@@ -971,7 +969,7 @@ if bSIGZielLayout then
 	nInfoFeldOben = nRandOben + 3.05 cm
 	nInfoFeldBreite = 6.70 cm
 	nBetrefftextLinks = nRandLinks
-	nBetrefftextOben = nRandOben + 6.10 cm
+	nBetrefftextOben = nRandOben + 7.80 cm
 	nFirmenLogoLinks = nRandLinks + 12.60 cm
 	nFirmenLogoOben = nRandOben + 0.05 cm
 	nFirmenLogoBreite = 3.70 cm
@@ -1497,15 +1495,29 @@ Function SIGInfoBlock()
 	SetPos(12.85 cm, 2.15 cm)
 	TL("Seite " + FormatNumeric("%.0f", nAuftragPage) + " von 1")
 
+	SelectFont(SchriftArtSIGInfoFett)
 	SetPos(8.75 cm, 3.95 cm)
-	SetTabs("L0 L450")
-	SelectFont(SchriftArtSIGMetaFett)
-	TL(Tab + "Rechnung Nº" + Tab + sBelegNr)
-	TL(Tab + "Datum" + Tab + sBelegDatum)
-	SelectFont(SchriftArtSIGMeta)
-	TL(Tab + "Kundennummer" + Tab + sKundenNr)
-	TL(Tab + "Bestellnummer" + Tab + sBestellNr)
-	TL(Tab + "Bestelldatum" + Tab + sBestellDatum)
+	TL("Rechnung Nr.")
+	SetPos(12.65 cm, 3.95 cm)
+	TL(sBelegNr)
+	SetPos(8.75 cm, 4.35 cm)
+	TL("Datum")
+	SetPos(12.65 cm, 4.35 cm)
+	TL(sBelegDatum)
+
+	SelectFont(SchriftArtSIGInfo)
+	SetPos(8.75 cm, 4.75 cm)
+	TL("Kundennummer")
+	SetPos(12.65 cm, 4.75 cm)
+	TL(sKundenNr)
+	SetPos(8.75 cm, 5.15 cm)
+	TL("Bestellnummer")
+	SetPos(12.65 cm, 5.15 cm)
+	TL(sBestellNr)
+	SetPos(8.75 cm, 5.55 cm)
+	TL("Bestelldatum")
+	SetPos(12.65 cm, 5.55 cm)
+	TL(sBestellDatum)
 
 	SelectFont(SchriftArtStandard)
 End Function
