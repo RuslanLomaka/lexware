@@ -942,9 +942,12 @@ Dim SchriftArtSIGKopf as FontType = CreateFont(SchriftFontSIG, 8, FONT_NORMAL, C
 Dim SchriftArtSIGTitel as FontType = CreateFont(SchriftFontSIG, 12, FONT_BOLD, COLOR_BLACK)
 Dim SchriftArtSIGInfo as FontType = CreateFont(SchriftFontSIG, 8, FONT_NORMAL, COLOR_BLACK)
 Dim SchriftArtSIGInfoFett as FontType = CreateFont(SchriftFontSIG, 8, FONT_BOLD, COLOR_BLACK)
+Dim SchriftArtSIGSichtfensterFett as FontType = CreateFont(SchriftFontSIG, 10, FONT_BOLD, COLOR_BLACK)
 Dim SchriftArtSIGTabellenKopf as FontType = CreateFont(SchriftFontSIG, 10, FONT_BOLD, COLOR_WHITE)
 Dim SchriftArtSIGFooter as FontType = CreateFont(SchriftFontSIG, 8, FONT_NORMAL, COLOR_BLACK)
 Dim SchriftArtSIGFooterFett as FontType = CreateFont(SchriftFontSIG, 8, FONT_BOLD, COLOR_BLACK)
+Dim SchriftArtSIGFooterGrau as FontType = CreateFont(SchriftFontSIG, 8, FONT_NORMAL, 8421504)
+Dim SchriftArtSIGFooterGrauFett as FontType = CreateFont(SchriftFontSIG, 8, FONT_BOLD, 8421504)
 
 if bSIGZielLayout then
 	' Positionierung wie im Ziel-PDF: breiter Nutzbereich, Adressfeld links,
@@ -1012,6 +1015,7 @@ if bSIGZielLayout then
 	SchriftArtGesamtbetrag = CreateFont(SchriftFontStandard, SchriftGroesseStandard, FONT_BOLD, SchriftFarbeStandard)
 	SchriftArtSpaltenKopf = SchriftArtSIGTabellenKopf
 	SchriftArtFusszeile = SchriftArtSIGFooter
+	SchriftArtSichtfenster = CreateFont(SchriftFontSIG, 10, FONT_NORMAL, COLOR_BLACK)
 
 	bMitSchraffur = TRUE
 	nSchraffurFarbeKopf = nSIGGruen
@@ -1032,7 +1036,7 @@ end if
 
 if is(DV_FREIMACHUNG) then
 	'Schriftart für Absender und Sichtfenster setzen
-	SchriftArtSichtfenster = CreateFont("Arial", 9, FONT_NORMAL, COLOR_BLACK)
+	SchriftArtSichtfenster = CreateFont(SchriftFontSIG, 10, FONT_NORMAL, COLOR_BLACK)
 	'keine Marken am linken Rand
 	bFalzmarkeOben = False
 	bFalzmarkeUnten = False
@@ -1794,6 +1798,25 @@ Function SIGBetreffText()
 	bEndeAuftragsbeschreibung = true
 End Function
 
+Function SIGSichtfensterNameFett()
+	if Get(AUFTR_KD_NR) = "10003 / KU241-003" then
+		SetPos(nSichtfensterLinks-nRandLinks, nSichtfensterOben-nRandOben)
+		SelectFont(SchriftArtSIGSichtfensterFett)
+		TL("SDS Central Services GmbH&Co.KG")
+		SelectFont(SchriftArtStandard)
+	end if
+End Function
+
+Function SIGUnterschrift()
+	LF
+	SelectFont(SchriftArtStandard)
+	TL("Mykhailo Syrotenko")
+	TL("Geschaeftsfuehrer")
+	SelectFont(SchriftArtGesamtbetrag)
+	TL("Smart Industry Group GmbH")
+	SelectFont(SchriftArtStandard)
+End Function
+
 '////////////////////////////////////////////////////////////////////////////////////
 'Funktion - PrintZusatzText
 'ZusatzText formatieren und ausgeben
@@ -2341,7 +2364,17 @@ Function SIGFussZeile()
 	TL("" + Tab + "" + Tab + "BIC: BYLADEM1COB")
 
 	SetPos(1470, 230)
-	TL("Seite " + FormatNumeric("%.0f", nAuftragPage) + " von 1")
+	SelectFont(SchriftArtSIGFooterGrau)
+	TL("Seite ")
+	SetPos(1530, 230)
+	SelectFont(SchriftArtSIGFooterGrauFett)
+	TL(FormatNumeric("%.0f", nAuftragPage))
+	SetPos(1550, 230)
+	SelectFont(SchriftArtSIGFooterGrau)
+	TL(" von ")
+	SetPos(1605, 230)
+	SelectFont(SchriftArtSIGFooterGrauFett)
+	TL("1")
 
 	SelectFont(SchriftArtStandard)
 End Function
@@ -2430,6 +2463,9 @@ Function Seitenwechsel()
 				end if
 				if bMitSichtfensterAufSeite1 then
 					PrintSichtfenster2018(SchriftArtSichtfenster, "de", false)
+					if bSIGZielLayout then
+						SIGSichtfensterNameFett()
+					end if
 				end if
 		  end if
 		end if
@@ -3048,6 +3084,10 @@ end if
 			Result_q = NextRecord("q")
 		end while
 		SetFont("Courier New", 8, FONT_NORMAL, COLOR_BLACK)
+	end if
+
+	if bSIGZielLayout then
+		SIGUnterschrift()
 	end if
 '///////////////////////////////////////////////////////////////////////////////////
 '---------------------LOGO ausgeben----------------------
