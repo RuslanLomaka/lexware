@@ -937,11 +937,12 @@ Include "layout.inc.lsf"
 ' die vom Lexware-Layoutassistenten geladenen Werte ueberschreiben.
 Dim bSIGZielLayout as bool = TRUE
 Dim nSIGGruen as Numeric = 6992981
-Dim SchriftArtSIGKopf as FontType = CreateFont("Arial", 7, FONT_NORMAL, COLOR_BLACK)
+Dim SchriftArtSIGKopf as FontType = CreateFont("Arial", 9, FONT_NORMAL, COLOR_BLACK)
 Dim SchriftArtSIGTitel as FontType = CreateFont("Arial", 11, FONT_BOLD, COLOR_BLACK)
 Dim SchriftArtSIGInfoFett as FontType = CreateFont("Arial", 9, FONT_BOLD, COLOR_BLACK)
 Dim SchriftArtSIGTabellenKopf as FontType = CreateFont("Arial", 9, FONT_BOLD, COLOR_WHITE)
-Dim SchriftArtSIGFooter as FontType = CreateFont("Arial", 7, FONT_NORMAL, COLOR_BLACK)
+Dim SchriftArtSIGFooter as FontType = CreateFont("Arial", 8, FONT_NORMAL, COLOR_BLACK)
+Dim SchriftArtSIGFooterFett as FontType = CreateFont("Arial", 8, FONT_BOLD, COLOR_BLACK)
 
 if bSIGZielLayout then
 	' Positionierung wie im Ziel-PDF: breiter Nutzbereich, Adressfeld links,
@@ -1864,16 +1865,17 @@ Function SIGKopfZeile()
 	RemoveAllTabs()
 	SetFormatNumericOptions(FN_CUSTOM, "","")
 
-	SetPos(0, 70)
+	SetPos(0, 72)
 	TL("Smart Industry Group GmbH | Von-Werthern-Str. 4A | 96487 Doerfles-Esbach | Deutschland")
 
+	SetPen(2, PEN_SOLID, nSIGGruen)
+	SetPos(0, 118)
+	DrawLine(1700, GetPosY())
+
 	if sFirmenLogoQuelle <> "" then
-		DrawImage(1270, 15, 360, 150, sFirmenLogoQuelle)
+		DrawImage(1260, 0, 390, 112, sFirmenLogoQuelle)
 	end if
 
-	SetPen(2, PEN_SOLID, nSIGGruen)
-	SetPos(0, 115)
-	DrawLine(1700, GetPosY())
 	SelectFont(SchriftArtStandard)
 End Function
 
@@ -2319,16 +2321,25 @@ Function SIGFussZeile()
 	SelectFont(SchriftArtSIGFooter)
 	RemoveAllTabs()
 
-	SetPen(1, PEN_SOLID, nSIGGruen)
-	DrawLine(1700, GetPosY())
-	LF
-
+	SetPos(0, 55)
 	SetTabs("L0 L620 L1190")
-	TL("Smart Industry Group GmbH" + Tab + "GF: Herr Mykhailo Syrotenko" + Tab + "Steuer-Nr.: 212/137/50523")
+	SelectFont(SchriftArtSIGFooterFett)
+	TL("Smart Industry Group GmbH")
+	SelectFont(SchriftArtSIGFooter)
+	SetPos(620, 55)
+	TL("GF: Herr Mykhailo Syrotenko")
+	SetPos(1190, 55)
+	TL("Steuer-Nr.: 212/137/50523")
+
+	SetPos(0, 80)
+	SetTabs("L0 L620 L1190")
 	TL("Von-Werthern-Strasse 4A" + Tab + "Handelsregister Coburg HRB 7208" + Tab + "USt-IdNr.: DE365709124")
 	TL("96487 Doerfles-Esbach" + Tab + "E-Mail: office@sig-automation.com" + Tab + "Sparkasse Coburg-Lichtenfels")
 	TL("Deutschland" + Tab + "Internet: www.sig-automation.com" + Tab + "IBAN: DE29 7835 0000 0041 1889 47")
 	TL("" + Tab + "" + Tab + "BIC: BYLADEM1COB")
+
+	SetPos(1470, 230)
+	TL("Seite " + FormatNumeric("%.0f", nAuftragPage) + " von 1")
 
 	SelectFont(SchriftArtStandard)
 End Function
