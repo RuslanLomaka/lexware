@@ -946,7 +946,8 @@ Dim SchriftArtSIGKopf as FontType = CreateFont(SchriftFontSIG, 8, FONT_NORMAL, C
 Dim SchriftArtSIGTitel as FontType = CreateFont(SchriftFontSIG, 12, FONT_BOLD, COLOR_BLACK)
 Dim SchriftArtSIGInfo as FontType = CreateFont(SchriftFontSIG, 8, FONT_NORMAL, COLOR_BLACK)
 Dim SchriftArtSIGInfoFett as FontType = CreateFont(SchriftFontSIG, 8, FONT_BOLD, COLOR_BLACK)
-Dim SchriftArtSIGSichtfensterFett as FontType = CreateFont(SchriftFontSIG, 10, FONT_BOLD, COLOR_BLACK)
+Dim SchriftArtSIGMeta as FontType = CreateFont(SchriftFontSIG, 15, FONT_NORMAL, COLOR_BLACK)
+Dim SchriftArtSIGMetaFett as FontType = CreateFont(SchriftFontSIG, 15, FONT_BOLD, COLOR_BLACK)
 Dim SchriftArtSIGTabellenKopf as FontType = CreateFont(SchriftFontSIG, 10, FONT_BOLD, COLOR_WHITE)
 Dim SchriftArtSIGFooter as FontType = CreateFont(SchriftFontSIG, 8, FONT_NORMAL, COLOR_BLACK)
 Dim SchriftArtSIGFooterFett as FontType = CreateFont(SchriftFontSIG, 8, FONT_BOLD, COLOR_BLACK)
@@ -1479,6 +1480,7 @@ Function SIGInfoBlock()
 	Dim sBelegDatum as string = FormatDate("%d.%m.%Y", GetDate(AUFTR_BELEGDATUM))
 	Dim sKundenNr as string = Get(AUFTR_KD_NR)
 	Dim sBestellNr as string = Get(AUFTR_BESTEL_NR)
+	Dim sBestellDatum as string = FormatDate("%d.%m.%Y", GetDate(AUFTR_BELEGDATUM))
 
 	RemoveAllTabs()
 	SelectFont(SchriftArtSIGTitel)
@@ -1496,16 +1498,14 @@ Function SIGInfoBlock()
 	TL("Seite " + FormatNumeric("%.0f", nAuftragPage) + " von 1")
 
 	SetPos(8.75 cm, 3.95 cm)
-	SetTabs("L0 L350")
-	SelectFont(SchriftArtSIGInfoFett)
-	TL("Rechnung No" + Tab + sBelegNr)
-	TL("Datum" + Tab + sBelegDatum)
-	SelectFont(SchriftArtSIGInfo)
-	TL("Kundennummer" + Tab + sKundenNr)
-	TL("Bestellnummer" + Tab + sBestellNr)
-	if sBestellNr <> "" then
-		TL("Bestelldatum" + Tab + FormatDate("%d.%m.%Y", GetDate(AUFTR_BELEGDATUM)))
-	end if
+	SetTabs("L0 L450")
+	SelectFont(SchriftArtSIGMetaFett)
+	TL(Tab + "Rechnung Nº" + Tab + sBelegNr)
+	TL(Tab + "Datum" + Tab + sBelegDatum)
+	SelectFont(SchriftArtSIGMeta)
+	TL(Tab + "Kundennummer" + Tab + sKundenNr)
+	TL(Tab + "Bestellnummer" + Tab + sBestellNr)
+	TL(Tab + "Bestelldatum" + Tab + sBestellDatum)
 
 	SelectFont(SchriftArtStandard)
 End Function
@@ -1802,14 +1802,6 @@ Function SIGBetreffText()
 	bEndeAuftragsbeschreibung = true
 End Function
 
-Function SIGSichtfensterNameFett()
-	if Get(AUFTR_KD_NR) = "10003 / KU241-003" then
-		SetPos(nSichtfensterLinks-nRandLinks, nSichtfensterOben-nRandOben)
-		SelectFont(SchriftArtSIGSichtfensterFett)
-		TL("SDS Central Services GmbH&Co.KG")
-		SelectFont(SchriftArtStandard)
-	end if
-End Function
 
 '////////////////////////////////////////////////////////////////////////////////////
 'Funktion - PrintZusatzText
@@ -2460,9 +2452,6 @@ Function Seitenwechsel()
 				end if
 				if bMitSichtfensterAufSeite1 then
 					PrintSichtfenster2018(SchriftArtSichtfenster, "de", false)
-					if bSIGZielLayout then
-						SIGSichtfensterNameFett()
-					end if
 				end if
 		  end if
 		end if
